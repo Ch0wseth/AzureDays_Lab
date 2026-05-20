@@ -1700,6 +1700,8 @@ Teste le scénario suivant :
 
 Ces démos sont conçues pour prouver de manière irréfutable l'impact de chaque mécanisme. Chaque démo utilise le MÊME prompt de base et compare les résultats selon la configuration active.
 
+> **Conseil** : Pour chaque comparatif, ouvrir le panneau Output (`Ctrl+Shift+U` → "GitHub Copilot Chat") et noter les `request token count` / `response token count` pour chaque variante.
+
 ---
 
 #### 🔬 COMPARATIF 1 — Instructions : même prompt, 4 configurations différentes
@@ -1709,59 +1711,223 @@ Ces démos sont conçues pour prouver de manière irréfutable l'impact de chaqu
 Crée un composant card pour afficher une tâche avec son titre, sa priorité et sa date de création
 ```
 
-**Config A** — Aucune instruction (renommer `.github/copilot-instructions.md` → `.bak`) :
+---
+
+##### Config A — Aucune instruction
+
+**Étape 1** — Ouvrir le terminal VS Code (`Ctrl+ù`) et désactiver les instructions :
 ```powershell
+cd C:\chemin\vers\le\projet
 Rename-Item .github/copilot-instructions.md copilot-instructions.md.bak
 ```
-Nouvelle conversation → taper le prompt → **screenshot le résultat** (`Win+Shift+S`)
 
-**Config B** — Instructions globales uniquement (remettre le fichier) :
+**Étape 2** — Ouvrir Copilot Chat (`Ctrl+Alt+I`)
+
+**Étape 3** — Cliquer sur le `+` (nouvelle conversation) pour repartir de zéro
+
+**Étape 4** — Taper exactement :
+```
+Crée un composant card pour afficher une tâche avec son titre, sa priorité et sa date de création
+```
+
+**Étape 5** — Attendre la réponse complète. Observer le résultat :
+
+**Exemple typique de ce que Copilot génère sans instructions** :
+```html
+<!-- Copilot génère probablement ceci : -->
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Task Title</h5>
+    <span class="badge badge-primary">High</span>
+    <p class="text-muted">Created: 2024-01-15</p>
+  </div>
+</div>
+```
+→ Bootstrap vanilla, anglais, pas de dark mode, pas d'accessibilité
+
+**Étape 6** — Faire un screenshot de la réponse : `Win+Shift+S` → sélectionner la zone → coller dans un document
+
+**Étape 7** — Dans le panneau Output, noter :
+- `request token count: ____` (tokens IN)
+- `response token count: ____` (tokens OUT)
+
+---
+
+##### Config B — Instructions globales uniquement
+
+**Étape 1** — Remettre les instructions :
 ```powershell
 Rename-Item .github/copilot-instructions.md.bak copilot-instructions.md
 ```
-Nouvelle conversation → même prompt → screenshot
 
-**Config C** — Instructions globales + instruction conditionnelle HTML :
+**Étape 2** — Dans Copilot Chat, cliquer `+` (NOUVELLE conversation — important sinon le cache peut interférer)
 
-Créer `.github/instructions/html-components.instructions.md` :
+**Étape 3** — Taper le MÊME prompt exactement :
+```
+Crée un composant card pour afficher une tâche avec son titre, sa priorité et sa date de création
+```
+
+**Étape 4** — Observer les différences :
+
+**Exemple typique avec instructions globales actives** :
+```html
+<!-- Copilot génère maintenant ceci : -->
+<div class="card bg-dark text-white border-light">
+  <div class="card-body">
+    <h5 class="card-title">Titre de la tâche</h5>
+    <span class="badge bg-danger">Haute</span>
+    <small class="text-body-secondary">Créé le : 15/01/2024</small>
+  </div>
+</div>
+```
+→ Orange Boosted, français, dark mode, couleurs Orange (#ff7900)
+
+**Étape 5** — Screenshot + noter les tokens dans Output
+
+**Ce qui a changé (grâce aux instructions)** :
+- `card` → `card bg-dark text-white` (dark mode)
+- "Task Title" → "Titre de la tâche" (français)
+- `badge-primary` → `badge bg-danger` (Orange Boosted)
+- "Created" → "Créé le" (français)
+
+---
+
+##### Config C — Instructions globales + instruction conditionnelle HTML
+
+**Étape 1** — Créer le fichier d'instruction conditionnelle :
+```
+Ctrl+Shift+P → File: New File
+```
+Nom : `.github/instructions/html-components.instructions.md`
+
+**Étape 2** — Coller ce contenu et sauvegarder (`Ctrl+S`) :
 ```markdown
 ---
 applyTo: "public/**"
 ---
-Pour les composants HTML :
-- Utiliser les composants Orange Boosted (pas de CSS custom)
-- Toujours inclure les attributs d'accessibilité (aria-label, role)
-- Responsive : utiliser la grille Boosted (col-sm, col-md, col-lg)
-- Dark mode : utiliser les classes bg-dark, text-white
-- Animations : utiliser les transitions Boosted (fade, collapse)
+Pour les composants HTML dans ce projet :
+- Utiliser exclusivement les composants Orange Boosted 5.3
+- Toujours inclure les attributs d'accessibilité :
+  - aria-label sur les éléments interactifs
+  - role quand le sémantique HTML ne suffit pas
+  - aria-live="polite" pour les mises à jour dynamiques
+- Responsive obligatoire : utiliser col-sm-12 col-md-6 col-lg-4
+- Dark mode : toutes les classes bg-dark, text-white, border-light
+- Priorité haute = badge bg-danger, moyenne = bg-warning, basse = bg-success
+- Date au format français : JJ/MM/AAAA
+- Inclure un bouton "Supprimer" avec icône et confirmation aria
 ```
-Ouvrir `public/index.html` comme fichier actif → nouvelle conversation → même prompt → screenshot
 
-**Config D** — Tout + Caveman Mode activé :
+**Étape 3** — **IMPORTANT** : Ouvrir `public/index.html` dans l'éditeur (cliquer sur l'onglet ou `Ctrl+P` → `index.html`). C'est le fichier actif qui déclenche l'instruction conditionnelle (grâce au glob `public/**`).
+
+**Étape 4** — Nouvelle conversation (`+`), même prompt :
+```
+Crée un composant card pour afficher une tâche avec son titre, sa priorité et sa date de création
+```
+
+**Étape 5** — Observer la réponse enrichie :
+
+**Exemple typique avec instructions conditionnelles** :
+```html
+<div class="col-sm-12 col-md-6 col-lg-4">
+  <div class="card bg-dark text-white border-light h-100" role="article" aria-label="Tâche : Titre">
+    <div class="card-body d-flex flex-column">
+      <h5 class="card-title" id="task-title-1">Titre de la tâche</h5>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge bg-danger" aria-label="Priorité haute">Haute</span>
+      </div>
+      <small class="text-body-secondary mt-auto">
+        <time datetime="2024-01-15">15/01/2024</time>
+      </small>
+      <button class="btn btn-outline-danger btn-sm mt-2" 
+              aria-label="Supprimer la tâche Titre de la tâche"
+              onclick="confirmDelete(this)">
+        🗑️ Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+```
+→ Responsive (col-*), accessible (aria-*, role), date française, bouton supprimer, TOUT ce que l'instruction conditionnelle demandait.
+
+**Étape 6** — Screenshot + noter les tokens
+
+---
+
+##### Config D — Tout + Caveman Mode activé
+
+**Étape 1** — Activer le caveman mode :
 ```powershell
-Rename-Item ".github/instructions/caveman-mode.instructions.md.disabled" "caveman-mode.instructions.md"
+Rename-Item ".github/instructions/caveman-mode.instructions.md.disabled" ".github/instructions/caveman-mode.instructions.md"
 ```
-Nouvelle conversation → même prompt → screenshot
 
-**Étape finale** — Comparer les 4 screenshots côte à côte :
+**Étape 2** — Nouvelle conversation (`+`), même prompt :
+```
+Crée un composant card pour afficher une tâche avec son titre, sa priorité et sa date de création
+```
 
-#### 📊 Grille de comparaison
+**Étape 3** — Observer la réponse ULTRA-COMPACTE :
+
+**Exemple typique avec caveman mode** :
+```html
+<div class="col-sm-12 col-md-6 col-lg-4">
+ <div class="card bg-dark text-white border-light" role="article">
+  <div class="card-body">
+   <h5 class="card-title">Titre</h5>
+   <span class="badge bg-danger">Haute</span>
+   <small class="text-body-secondary"><time>15/01/2024</time></small>
+   <button class="btn btn-outline-danger btn-sm" aria-label="Supprimer">🗑️</button>
+  </div>
+ </div>
+</div>
+```
+→ MÊME qualité (Boosted, accessible, responsive) mais 60% plus court (pas de commentaires, pas d'explications, noms courts).
+
+**Étape 4** — Screenshot + noter les tokens
+
+**Étape 5** — **IMPORTANT : Remettre la config normale** :
+```powershell
+Rename-Item ".github/instructions/caveman-mode.instructions.md" ".github/instructions/caveman-mode.instructions.md.disabled"
+```
+
+---
+
+##### 📊 Mettre les 4 screenshots côte à côte
+
+Ouvrir les 4 screenshots dans VS Code (drag & drop) et faire un split :
+```
+Clic droit sur le 1er screenshot → Split Right
+Clic droit sur le 2ème → Split Right
+etc.
+```
+
+**Grille de comparaison à remplir avec vos résultats réels** :
 
 | Critère | A (rien) | B (global) | C (global + HTML) | D (+ caveman) |
 |---------|----------|-----------|-------------------|---------------|
-| **Framework CSS** | Bootstrap/Tailwind/rien | Orange Boosted | Orange Boosted | Orange Boosted |
-| **Langue** | Anglais | Français | Français | Français |
-| **Dark mode** | ❌ | ✅ | ✅✅ (classes explicites) | ✅ |
-| **Accessibilité** | ❌ | ❌ (pas demandé) | ✅ (aria-labels) | ✅ |
-| **Responsive** | Aléatoire | Aléatoire | ✅ (grille Boosted) | ✅ |
-| **Longueur réponse** | ~30 lignes | ~30 lignes | ~35 lignes | ~10-15 lignes |
-| **Tokens OUT** | ~400 | ~400 | ~450 | ~150-200 |
-| **Utilisable tel quel** | ❌ Refaire | ⚠️ Ajuster | ✅ Presque parfait | ✅ Compact mais bon |
+| **Framework CSS** | _________ | _________ | _________ | _________ |
+| **Langue texte** | _________ | _________ | _________ | _________ |
+| **Dark mode** | _________ | _________ | _________ | _________ |
+| **Accessibilité** | _________ | _________ | _________ | _________ |
+| **Responsive** | _________ | _________ | _________ | _________ |
+| **Lignes de code** | _________ | _________ | _________ | _________ |
+| **Tokens IN** | _________ | _________ | _________ | _________ |
+| **Tokens OUT** | _________ | _________ | _________ | _________ |
+| **Utilisable tel quel** | _________ | _________ | _________ | _________ |
 
-**⚠️ Remettre la config normale après** :
-```powershell
-Rename-Item ".github/instructions/caveman-mode.instructions.md" "caveman-mode.instructions.md.disabled"
-```
+**Résultats attendus** :
+
+| Critère | A (rien) | B (global) | C (global + HTML) | D (+ caveman) |
+|---------|----------|-----------|-------------------|---------------|
+| **Framework CSS** | Bootstrap/Tailwind | Orange Boosted | Orange Boosted | Orange Boosted |
+| **Langue texte** | Anglais | Français | Français | Français |
+| **Dark mode** | ❌ | ✅ | ✅✅ (classes explicites) | ✅ |
+| **Accessibilité** | ❌ | ❌ | ✅ (aria-*, role) | ✅ |
+| **Responsive** | ❌ | Aléatoire | ✅ (col-sm/md/lg) | ✅ |
+| **Lignes de code** | ~8-10 | ~12-15 | ~18-22 | ~8-10 |
+| **Tokens IN** | ~200 | ~500 | ~700 | ~900 |
+| **Tokens OUT** | ~300 | ~400 | ~500 | ~150-200 |
+| **Utilisable tel quel** | ❌ Refaire | ⚠️ Ajuster | ✅ Directement | ✅ Compact mais complet |
 
 ---
 
@@ -1769,66 +1935,134 @@ Rename-Item ".github/instructions/caveman-mode.instructions.md" "caveman-mode.in
 
 **Objectif** : Prouver que les Prompt Files garantissent la cohérence quand on crée plusieurs éléments similaires.
 
-**Scénario** : Créer 3 routes API (users, categories, comments) et vérifier la cohérence.
+**Scénario** : Créer 3 routes API (users, categories, comments) et vérifier la cohérence entre les 3.
 
-##### Sans Prompt File (3 prompts manuels)
+---
 
-**Tour 1** — Nouvelle conversation :
+##### SANS Prompt File — 3 prompts manuels
+
+**Étape 1** — Ouvrir Copilot Chat (`Ctrl+Alt+I`). Nouvelle conversation (`+`).
+
+**Étape 2** — Tour 1 — Taper :
 ```
 Crée une route Express pour /api/users avec CRUD complet. ES Modules, JSDoc, try/catch, format { data } ou { error }.
 ```
-→ Copier le résultat dans un fichier texte temporaire.
 
-**Tour 2** — Nouvelle conversation :
+**Étape 3** — Quand Copilot répond, **copier le code généré** dans un nouveau fichier :
+```
+Ctrl+Shift+P → File: New File → temp-users.js
+```
+Coller le code (`Ctrl+V`), sauvegarder.
+
+**Étape 4** — Nouvelle conversation (`+`). Tour 2 — Taper :
 ```
 Crée une route Express pour /api/categories. Mêmes conventions que pour users.
 ```
-→ Copier le résultat.
 
-**Tour 3** — Nouvelle conversation :
+**Étape 5** — Copier dans `temp-categories.js`.
+
+**Étape 6** — Nouvelle conversation (`+`). Tour 3 — Taper :
 ```
 Crée une route Express pour /api/comments avec CRUD.
 ```
-→ Copier le résultat.
+(Notez : on oublie volontairement de re-préciser les conventions)
 
-**Analyser** : Comparer les 3 fichiers. Chercher les incohérences :
-- Noms de variables différents ?
-- Format de réponse différent ?
-- Gestion d'erreur différente ?
-- JSDoc présent partout ?
-- Status codes cohérents ?
+**Étape 7** — Copier dans `temp-comments.js`.
 
-##### Avec Prompt File `/generate-route` (3 invocations)
-
-**Tour 1** :
+**Étape 8** — **ANALYSE CÔTE À CÔTE** — Ouvrir les 3 fichiers en split :
 ```
-/generate-route pour /api/users — CRUD utilisateurs (id, email, name, role)
+Clic droit temp-users.js → Split Right
+Clic droit temp-categories.js → Split Right
 ```
 
-**Tour 2** :
+**Étape 9** — Chercher les incohérences. Exemples typiques que vous allez trouver :
+
+| Aspect | users.js (tour 1) | categories.js (tour 2) | comments.js (tour 3) |
+|--------|-------------------|------------------------|---------------------|
+| Import | `import { Router } from 'express'` | `import express from 'express'` | `const express = require('express')` 😱 |
+| Réponse succès | `res.status(200).json({ data: users })` | `res.json({ data: categories })` | `res.send(comments)` |
+| Réponse erreur | `res.status(400).json({ error: msg })` | `res.status(400).json({ message: msg })` | `res.status(500).send(err)` |
+| JSDoc | ✅ Présent | ✅ Présent | ❌ Absent |
+| Création | `res.status(201)` | `res.status(200)` | `res.status(201)` |
+
+**Étape 10** — Noter les tokens totaux pour les 3 tours (Output panel) :
+- Tour 1 : IN _____ + OUT _____
+- Tour 2 : IN _____ + OUT _____
+- Tour 3 : IN _____ + OUT _____
+- **Total** : _____
+
+---
+
+##### AVEC Prompt File `/generate-route` — 3 invocations
+
+**Étape 1** — Nouvelle conversation (`+`).
+
+**Étape 2** — Taper `/` dans le champ de saisie. Observer la liste qui apparaît :
 ```
-/generate-route pour /api/categories — CRUD catégories (id, name, color, icon)
+┌─────────────────────────────────────┐
+│ /generate-route                      │
+│ /generate-tests                      │
+│ /generate-boosted-component          │
+│ /generate-service                    │
+│ /generate-crud                       │
+│ /audit-accessibility                 │
+└─────────────────────────────────────┘
 ```
 
-**Tour 3** :
+**Étape 3** — Sélectionner `generate-route` (cliquer ou appuyer Enter). Compléter :
 ```
-/generate-route pour /api/comments — CRUD commentaires (id, taskId, author, text, createdAt)
+pour /api/users — CRUD utilisateurs (id, email, name, role, createdAt)
 ```
 
-**Analyser** : Les 3 fichiers suivent exactement le même pattern.
+**Étape 4** — Copier dans `temp2-users.js`.
 
-#### 📊 Grille de comparaison
+**Étape 5** — Nouvelle conversation (`+`). Taper `/generate-route` + :
+```
+pour /api/categories — CRUD catégories (id, name, color, icon, createdAt)
+```
+Copier dans `temp2-categories.js`.
+
+**Étape 6** — Nouvelle conversation (`+`). Taper `/generate-route` + :
+```
+pour /api/comments — CRUD commentaires (id, taskId, author, text, createdAt)
+```
+Copier dans `temp2-comments.js`.
+
+**Étape 7** — **ANALYSE CÔTE À CÔTE** — Ouvrir les 3 fichiers en split.
+
+**Étape 8** — Constater la cohérence PARFAITE :
+
+| Aspect | users.js | categories.js | comments.js |
+|--------|----------|---------------|-------------|
+| Import | `import { Router } from 'express'` | `import { Router } from 'express'` | `import { Router } from 'express'` |
+| Réponse succès | `res.status(200).json({ data })` | `res.status(200).json({ data })` | `res.status(200).json({ data })` |
+| Réponse erreur | `res.status(400).json({ error })` | `res.status(400).json({ error })` | `res.status(400).json({ error })` |
+| JSDoc | ✅ | ✅ | ✅ |
+| Création | `res.status(201)` | `res.status(201)` | `res.status(201)` |
+
+**Étape 9** — Noter les tokens. Comparer avec la version sans template.
+
+**Étape 10** — Supprimer les fichiers temporaires :
+```powershell
+Remove-Item temp-*.js, temp2-*.js
+```
+
+---
+
+##### 📊 Grille de comparaison
 
 | Critère | Sans Prompt File | Avec /generate-route |
 |---------|-----------------|---------------------|
-| **Format réponse** | Variable (parfois `res.json(data)`, parfois `res.send({data})`) | Identique partout |
-| **Noms variables** | `user`/`users` vs `item`/`items` | Pattern identique |
-| **Error handling** | Parfois `try/catch`, parfois `.catch()` | Toujours `try/catch` |
-| **JSDoc** | Absent au tour 3 (oublié) | Toujours présent |
-| **Status codes** | 200 ou 201 pour création ? | Toujours 201 pour POST |
-| **Temps par route** | 30s de prompt + vérification | 5s de prompt |
-| **Tokens utilisateur** | ~80 tokens × 3 = 240 | ~15 tokens × 3 = 45 |
-| **Cohérence** | ⚠️ 60-70% | ✅ 100% |
+| **Prompts tapés** | ~80 mots × 3 = 240 mots | ~15 mots × 3 = 45 mots |
+| **Tokens IN utilisateur** | ~240 tokens | ~45 tokens (-81%) |
+| **Format import** | 3 styles différents | 1 style unique |
+| **Format réponse** | 3 patterns différents | 1 pattern unique |
+| **JSDoc** | Absent au tour 3 | Toujours présent |
+| **Status code POST** | 200 ou 201 selon l'humeur | Toujours 201 |
+| **Error handling** | try/catch, .catch(), ou rien | Toujours try/catch |
+| **Temps total** | ~3 min (taper + vérifier + corriger) | ~1 min (taper + vérifier) |
+| **Cohérence inter-fichiers** | ⚠️ 60-70% | ✅ 100% |
+| **Refactoring nécessaire** | Oui (harmoniser les 3) | Non |
 
 ---
 
@@ -1841,39 +2075,154 @@ Crée une route Express pour /api/comments avec CRUD.
 Analyse #file:src/routes/tasks.js et donne-moi ton avis
 ```
 
+**Préparation** : Ouvrir `src/routes/tasks.js` dans l'éditeur (`Ctrl+P` → `tasks.js` → choisir routes).
+
+---
+
 ##### Test A — Agent par défaut (Copilot)
-- Dropdown agent → `Copilot`
-- Taper le prompt
-- **Observer** : réponse généraliste, explique ce que fait le fichier, suggestions variées
+
+**Étape 1** — Copilot Chat (`Ctrl+Alt+I`). Vérifier le dropdown agent = **"Copilot"** (défaut).
+
+**Étape 2** — Nouvelle conversation (`+`). Taper :
+```
+Analyse #file:src/routes/tasks.js et donne-moi ton avis
+```
+
+**Étape 3** — Observer le style de réponse. **Exemple typique** :
+
+```
+Ce fichier implémente les routes CRUD pour les tâches. Voici mon analyse :
+
+**Points positifs :**
+- Utilisation correcte d'Express Router
+- Gestion d'erreur avec try/catch
+- Format de réponse cohérent
+
+**Suggestions d'amélioration :**
+- Vous pourriez ajouter de la validation des entrées
+- Un middleware d'erreur centralisé serait bénéfique
+- Considérer l'ajout de pagination pour GET /api/tasks
+
+**Structure générale :** Le code est bien organisé et suit les 
+conventions Express standard...
+```
+→ Généraliste, long, explications, pas forcément actionnable.
+
+**Étape 4** — Screenshot + noter tokens OUT dans Output.
+
+---
 
 ##### Test B — Agent `code-reviewer`
-- Dropdown agent → `code-reviewer`
-- Même prompt
-- **Observer** : format 🔴🟡🟢, focus sécurité et performance
+
+**Étape 1** — Cliquer sur le **dropdown d'agent** en haut du chat. Sélectionner **`code-reviewer`**.
+
+**Étape 2** — Nouvelle conversation (`+`). Même prompt :
+```
+Analyse #file:src/routes/tasks.js et donne-moi ton avis
+```
+
+**Étape 3** — Observer le format structuré. **Exemple typique** :
+
+```
+🔴 CRITIQUE — Ligne 15 — Injection potentielle
+Le paramètre `req.params.id` est passé directement à `getById()` 
+sans sanitization. Si le store change vers une DB, c'est une 
+injection potentielle.
+Fix : const id = sanitizeId(req.params.id);
+
+🟡 ATTENTION — Ligne 8 — Pas de rate limiting
+Le endpoint POST /api/tasks n'a pas de rate limit.
+Un attaquant pourrait spammer la création de tâches.
+Fix : Ajouter express-rate-limit sur cette route.
+
+🟡 ATTENTION — Ligne 22 — Données non validées
+Le body de la requête POST est passé directement à create().
+Fix : Valider avec un schéma (Joi, Zod, ou validation manuelle).
+
+🟢 SUGGESTION — Ligne 1 — Imports inutilisés
+Vérifier si tous les imports sont utilisés.
+
+✅ Pas de fuite mémoire détectée.
+✅ Pas de secret en dur.
+```
+→ Structuré, actionnable, focus sécurité/perf, avec numéros de ligne.
+
+**Étape 4** — Screenshot + noter tokens OUT.
+
+---
 
 ##### Test C — Agent `caveman-mode`
-- Dropdown agent → `caveman-mode`
-- Même prompt
-- **Observer** : réponse ultra-courte, mots-clés, pas de phrases
+
+**Étape 1** — Dropdown agent → **`caveman-mode`**.
+
+**Étape 2** — Nouvelle conversation (`+`). Même prompt :
+```
+Analyse #file:src/routes/tasks.js et donne-moi ton avis
+```
+
+**Étape 3** — Observer la réponse ULTRA-COMPACTE. **Exemple typique** :
+
+```
+routes/tasks.js:
+- no input validation → add
+- no rate limit POST → add
+- id param unsanitized → fix
+- error msgs leak internals → generic msgs
+- rest: ok
+```
+→ 5 lignes. Mots-clés. Pas de phrases. MÊME informations essentielles que code-reviewer mais 80% plus court.
+
+**Étape 4** — Screenshot + noter tokens OUT.
+
+---
 
 ##### Test D — Agent `full-review`
-- Dropdown agent → `full-review`
-- Même prompt
-- **Observer** : 3 passes (code, tests, a11y), lance npm test, rapport structuré
 
-#### 📊 Grille de comparaison
+**Étape 1** — Dropdown agent → **`full-review`**.
+
+**Étape 2** — Nouvelle conversation (`+`). Même prompt :
+```
+Analyse #file:src/routes/tasks.js et donne-moi ton avis
+```
+
+**Étape 3** — Observer l'exécution multi-passes. **Exemple typique** :
+
+```
+### 📋 Revue complète de src/routes/tasks.js
+
+#### Code (3 issues)
+- 🔴 CRITIQUE : Pas de validation d'entrée sur POST/PUT
+- 🟡 ATTENTION : Pas de rate limiting
+- 🟡 ATTENTION : Erreurs non loguées côté serveur
+
+#### Tests (1 manquant)
+Using tool: runTerminalCommand → npm test
+✅ 29 tests passent, 0 échecs.
+⚠️ Manquant : test pour le cas PUT avec body vide
+
+#### Accessibilité
+N/A — fichier backend (pas de HTML)
+
+### ⚠️ Verdict : À CORRIGER
+3 issues à résoudre avant merge. Tests quasi-complets (1 à ajouter).
+```
+→ 3 passes, lance les tests EN VRAI, rapport structuré avec verdict.
+
+**Étape 4** — Screenshot + noter tokens OUT.
+
+---
+
+##### 📊 Mettre les 4 réponses côte à côte
 
 | Critère | Copilot (défaut) | code-reviewer | caveman-mode | full-review |
 |---------|-----------------|---------------|--------------|-------------|
-| **Longueur** | ~20-30 lignes | ~15-20 lignes | ~5-8 lignes | ~40-50 lignes |
-| **Tokens OUT** | ~400-600 | ~300-400 | ~80-150 | ~800-1200 |
-| **Focus** | Généraliste | Sécurité + Perf | Minimal | Complet (code+tests+a11y) |
-| **Actionnable** | ⚠️ Suggestions vagues | ✅ Fixes précis | ⚠️ Mots-clés | ✅ Plan d'action |
-| **Exécute des actions** | ❌ | ❌ | ❌ | ✅ (lance tests) |
-| **Format** | Paragraphes | 🔴🟡🟢 structuré | Télégraphique | Rapport 3 sections |
-| **Idéal pour** | Comprendre | Pré-commit review | Économiser tokens | Review complète |
-
-**Démonstration visuelle** : Mettre les 4 réponses côte à côte (split view ou 4 screenshots).
+| **Longueur réponse** | ~25-35 lignes | ~15-20 lignes | ~5-8 lignes | ~25-30 lignes |
+| **Tokens OUT** | ~400-600 | ~300-400 | ~50-100 | ~600-900 |
+| **Format** | Paragraphes libres | 🔴🟡🟢 + fix | Mots-clés bullet | 3 sections + verdict |
+| **Actionnable** | ⚠️ "Vous pourriez..." | ✅ Ligne + fix exact | ⚠️ Mots-clés | ✅ Plan d'action |
+| **Exécute des actions** | ❌ Non | ❌ Non | ❌ Non | ✅ Oui (npm test) |
+| **Temps de réponse** | ~3s | ~3s | ~2s | ~10-15s (lance tests) |
+| **Idéal pour** | Comprendre le code | Pré-commit review | Audit rapide/cheap | Review complète avant PR |
 
 ---
 
@@ -1884,59 +2233,130 @@ Analyse #file:src/routes/tasks.js et donne-moi ton avis
 Vérifie que quand on crée une tâche avec priorité "haute", le badge s'affiche en rouge dans l'interface.
 ```
 
+**Pré-requis** : L'app doit tourner (`npm run dev` dans un terminal).
+
+---
+
 ##### Test A — Sans MCP (Playwright désactivé)
 
-**Étape 1** — Désactiver Playwright :
+**Étape 1** — Désactiver le MCP Playwright :
 ```
-Ctrl+Shift+P → MCP: Stop Server → playwright
+Ctrl+Shift+P → taper "MCP" → sélectionner "MCP: Stop Server" → sélectionner "playwright"
+```
+Vérifier : `Ctrl+Shift+P` → `MCP: List Servers` → playwright = **Stopped** (ou absent)
+
+**Étape 2** — Ouvrir Copilot Chat. Vérifier : mode **Agent** (dropdown en haut).
+
+**Étape 3** — Nouvelle conversation (`+`). Taper :
+```
+Vérifie que quand on crée une tâche avec priorité "haute", le badge s'affiche en rouge dans l'interface.
 ```
 
-**Étape 2** — Mode Agent, taper le prompt.
+**Étape 4** — Observer la réponse. **Ce que Copilot fait SANS MCP** :
 
-**Résultat attendu** : Copilot va GÉNÉRER du code Playwright :
+```
+Pour vérifier cela, vous pouvez écrire un test Playwright :
+
 ```javascript
-// "Voici le code pour vérifier ça :"
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
+
 test('badge rouge pour priorité haute', async ({ page }) => {
   await page.goto('http://localhost:3000');
-  // ... du code que VOUS devez copier et exécuter
+  
+  // Créer une tâche
+  await page.click('button:has-text("Nouvelle Tâche")');
+  await page.fill('#taskTitle', 'Test priorité');
+  await page.selectOption('#taskPriority', 'high');
+  await page.click('button:has-text("Créer")');
+  
+  // Vérifier le badge
+  const badge = page.locator('.badge:has-text("Haute")');
+  await expect(badge).toHaveClass(/bg-danger/);
 });
 ```
-→ Il donne du code. Vous devez l'exécuter vous-même. Pas de preuve visuelle.
+
+Vous pouvez exécuter ce test avec `npx playwright test`.
+```
+
+→ Copilot GÉNÈRE du code. Il ne l'EXÉCUTE pas. Vous devez :
+1. Copier le code
+2. Le mettre dans un fichier
+3. Lancer `npx playwright test`
+4. Lire la sortie
+5. Interpréter le résultat
+= **5 étapes manuelles**, ~3-5 minutes
+
+**Étape 5** — Screenshot + noter tokens OUT.
+
+---
 
 ##### Test B — Avec MCP (Playwright activé)
 
-**Étape 1** — Réactiver Playwright :
+**Étape 1** — Réactiver le MCP Playwright :
 ```
-Ctrl+Shift+P → MCP: Start Server → playwright
+Ctrl+Shift+P → "MCP: Start Server" → "playwright"
+```
+Vérifier : `MCP: List Servers` → playwright = **Ready** ✅
+
+**Étape 2** — Nouvelle conversation (`+`). Mode Agent. MÊME prompt :
+```
+Vérifie que quand on crée une tâche avec priorité "haute", le badge s'affiche en rouge dans l'interface.
 ```
 
-**Étape 2** — Mode Agent, même prompt exactement.
+**Étape 3** — Observer Copilot AGIR en temps réel. **Ce qui se passe** :
 
-**Résultat attendu** : Copilot va EXÉCUTER le test en live :
 ```
-Using tool: browser_navigate → http://localhost:3000
-Using tool: browser_click → "Nouvelle Tâche"
-Using tool: browser_fill → title: "Test priorité"
-Using tool: browser_select → priority: "haute"
-Using tool: browser_click → "Créer"
-Using tool: browser_screenshot → [image inline]
+🔄 Using tool: browser_navigate
+   → Navigating to http://localhost:3000
 
-✅ Vérifié : Le badge priorité "Haute" est bien affiché avec la classe 
-"badge bg-danger" (rouge). Voici le screenshot comme preuve.
+🔄 Using tool: browser_screenshot  
+   → [📷 Screenshot de la page d'accueil affiché inline]
+
+🔄 Using tool: browser_click
+   → Clicking "Nouvelle Tâche" button
+
+🔄 Using tool: browser_fill
+   → Filling #taskTitle with "Test vérification badge"
+
+🔄 Using tool: browser_select
+   → Selecting "high" in #taskPriority
+
+🔄 Using tool: browser_click
+   → Clicking "Créer"
+
+🔄 Using tool: browser_screenshot
+   → [📷 Screenshot avec la nouvelle tâche et son badge]
+
+✅ Vérifié : La tâche "Test vérification badge" a été créée avec 
+succès. Le badge de priorité affiche "Haute" avec la classe CSS 
+"badge bg-danger" qui correspond bien à la couleur rouge.
+
+Voici le screenshot comme preuve :
+[📷 Image inline montrant le badge rouge]
 ```
-→ Il FAIT le test, prend un screenshot, et vous donne la PREUVE.
 
-#### 📊 Grille de comparaison
+→ Copilot a FAIT le test. Vous voyez :
+- Un navigateur Chromium s'ouvrir à l'écran
+- Les clics se faire automatiquement
+- Les screenshots apparaître dans le chat
+= **0 étape manuelle**, ~30 secondes
 
-| Critère | Sans MCP | Avec MCP |
-|---------|----------|----------|
-| **Ce que Copilot fait** | Génère du code de test | Exécute le test en live |
-| **Preuve visuelle** | ❌ Aucune | ✅ Screenshot inline |
-| **Effort pour vous** | Copier le code, l'exécuter, vérifier | 0 — tout est fait |
-| **Temps total** | 2-5 min (copier + lancer + lire) | 30 sec (Copilot fait tout) |
-| **Fiabilité** | ⚠️ Le code peut avoir des erreurs | ✅ Copilot adapte si ça échoue |
-| **Tokens** | ~300 OUT (code) | ~500 OUT (actions + résultat) mais 0 effort |
+**Étape 4** — Screenshot de la conversation + noter tokens OUT.
+
+---
+
+##### 📊 Grille de comparaison
+
+| Critère | Sans MCP (Playwright arrêté) | Avec MCP (Playwright actif) |
+|---------|-------------------------------|------------------------------|
+| **Ce que Copilot produit** | Du code de test à copier | Un TEST EXÉCUTÉ avec preuves |
+| **Screenshot/preuve visuelle** | ❌ Aucune | ✅ 2-3 screenshots inline |
+| **Navigateur visible à l'écran** | ❌ Non | ✅ Oui (Chromium s'ouvre) |
+| **Effort humain après** | Copier → fichier → exécuter → lire | Rien (tout est fait) |
+| **Temps total** | 3-5 min | 30 secondes |
+| **Tokens OUT** | ~300-400 (code) | ~200-300 (résultat + outil) |
+| **Fiabilité** | ⚠️ Code peut avoir des erreurs | ✅ Copilot retry si ça échoue |
+| **Effet "WOW" en démo** | 😐 "Ah ok du code" | 🤯 "Il fait le test tout seul !" |
 
 ---
 
@@ -1944,87 +2364,134 @@ Using tool: browser_screenshot → [image inline]
 
 **La tâche** : "Ajouter un module 'tags' à l'application (service + route + tests + vérification que ça marche)"
 
-##### Niveau 0 — Aucun skill (tout à la main)
+---
 
-**Tour 1** :
-```
-Crée un service de tags dans src/services/tagService.js avec CRUD
-```
-Vérifier, ajuster, sauvegarder.
+##### Niveau 0 — Aucun skill (tout à la main, tour par tour)
 
-**Tour 2** :
+**Étape 1** — Copilot Chat, mode Agent. Tour 1 :
 ```
-Crée les routes pour les tags dans src/routes/tags.js
+Crée un service de tags dans src/services/tagService.js avec :
+- Store in-memory (Map)
+- CRUD : getAll, getById, create, update, delete
+- Chaque tag a : id, name, color
 ```
-Vérifier que c'est cohérent avec le service.
+Attendre → Copilot génère le fichier. Vérifier qu'il est correct. Accepter.
 
-**Tour 3** :
+**Étape 2** — Tour 2 :
+```
+Crée les routes pour les tags dans src/routes/tags.js (GET, POST, PUT, DELETE)
+```
+Attendre → Vérifier que le format de réponse est cohérent avec tasks.js. Si ce n'est pas le cas → Tour 2bis pour corriger.
+
+**Étape 3** — Tour 3 :
 ```
 Crée les tests dans tests/tagService.test.js
 ```
-Vérifier, corriger les imports.
+Attendre → Vérifier les imports, les mocks.
 
-**Tour 4** :
+**Étape 4** — Tour 4 :
 ```
-Intègre les routes dans src/app.js
+Ajoute la route tags dans src/app.js (import + app.use('/api/tags', tagsRouter))
 ```
 
-**Tour 5** :
+**Étape 5** — Tour 5 :
 ```
-@terminal Lance les tests pour vérifier que tout passe
+@terminal Lance npm test et dis-moi si tout passe
 ```
-Si ça échoue : 2-3 tours de debug.
+Si ça échoue (probable — imports cassés, chemins incorrects) :
+- Tour 6 : "Corrige l'erreur X"
+- Tour 7 : "Relance les tests"
+- Potentiellement tour 8...
 
-**Total** : 5-8 tours, ~15 min, ~4000-6000 tokens
+**Bilan** : 5-8 tours, ~15 min, beaucoup de vérification manuelle entre chaque tour.
+
+---
 
 ##### Niveau 1 — Skill basique (`/generate-crud`)
 
-**Tour 1** :
+**Étape 1** — Copilot Chat, mode Agent. Taper `/` → sélectionner `generate-crud` :
 ```
-/generate-crud pour des tags (id, name, color, taskIds[])
-```
-Copilot génère les 3 fichiers d'un coup.
-
-**Tour 2** :
-```
-Intègre la route tags dans src/app.js et lance les tests
+/generate-crud pour des tags (id, name, color, createdAt)
 ```
 
-**Total** : 2 tours, ~3 min, ~1500-2000 tokens
+**Étape 2** — Observer : Copilot génère les 3 fichiers D'UN COUP :
+- `src/services/tagService.js` (service)
+- `src/routes/tags.js` (routes)
+- `tests/tagService.test.js` (tests)
+Tous cohérents entre eux (même style, mêmes imports).
 
-##### Niveau 2 — Skill avancé (Agent `full-review` + MCP)
-
-**Tour 1** — Sélectionner l'agent `full-review`, taper :
+**Étape 3** — Tour 2 :
 ```
-Ajoute un module complet de gestion des tags :
-- Service CRUD (src/services/tagService.js)
-- Routes REST (src/routes/tags.js) 
-- Tests (tests/tagService.test.js)
-- Intégration dans app.js
-- Lance les tests pour confirmer que tout passe
-- Vérifie dans le navigateur que l'app démarre sans erreur
+Intègre la route tags dans src/app.js et lance les tests pour vérifier
 ```
 
-Copilot fait TOUT :
-1. Crée les 3 fichiers
-2. Modifie app.js
-3. Lance `npm test`
-4. Ouvre le navigateur pour vérifier
-5. Rapporte le résultat
+**Bilan** : 2 tours, ~3 min, cohérence garantie par le template.
 
-**Total** : 1 tour, ~1 min, ~2500 tokens (plus de tokens OUT mais ZÉRO effort humain)
+---
 
-#### 📊 Grille de comparaison
+##### Niveau 2 — Skill avancé (Agent orchestrateur + MCP)
 
-| Critère | Sans skill (manuel) | Skill basique (/generate-crud) | Skill avancé (Agent+MCP) |
-|---------|--------------------|---------------------------------|--------------------------|
-| **Tours de conversation** | 5-8 | 2 | 1 |
-| **Temps humain** | 15 min | 3 min | 1 min |
+**Étape 1** — Dropdown agent → sélectionner **`full-review`** (ou `qa-tester`).
+
+**Étape 2** — UN SEUL prompt :
+```
+Ajoute un module complet de gestion des tags à l'application :
+1. Crée le service (src/services/tagService.js) — CRUD, in-memory, même style que taskService
+2. Crée les routes (src/routes/tags.js) — même format que tasks.js
+3. Crée les tests (tests/tagService.test.js) — couvrir tous les cas
+4. Intègre dans app.js
+5. Lance les tests pour confirmer zéro régression
+6. Ouvre le navigateur et vérifie que l'app démarre sans erreur sur http://localhost:3000
+```
+
+**Étape 3** — Observer Copilot TOUT faire :
+
+```
+Creating src/services/tagService.js...
+✅ Service créé (6 méthodes, JSDoc, validation)
+
+Creating src/routes/tags.js...  
+✅ Routes créées (5 endpoints, try/catch, format {data})
+
+Creating tests/tagService.test.js...
+✅ Tests créés (12 tests)
+
+Modifying src/app.js...
+✅ Route tags intégrée
+
+Using tool: runTerminalCommand → npm test
+✅ 41 tests passent (29 existants + 12 nouveaux), 0 échecs
+
+Using tool: browser_navigate → http://localhost:3000
+Using tool: browser_screenshot
+✅ App démarre sans erreur. Screenshot :
+[📷 Image de l'app fonctionnelle]
+
+### Résumé
+- 3 fichiers créés
+- 1 fichier modifié  
+- 41/41 tests passent
+- App vérifié en navigateur ✅
+```
+
+**Bilan** : 1 tour, ~1-2 min, ZÉRO intervention humaine, preuve visuelle incluse.
+
+---
+
+##### 📊 Grille de comparaison détaillée
+
+| Critère | Niveau 0 (manuel) | Niveau 1 (/generate-crud) | Niveau 2 (Agent + MCP) |
+|---------|-------------------|---------------------------|------------------------|
+| **Nombre de tours** | 5-8 | 2 | **1** |
+| **Temps humain** | 15 min | 3 min | **1 min** |
 | **Tokens totaux** | 4000-6000 | 1500-2000 | 2500 |
-| **Intervention manuelle** | Beaucoup (vérifier, corriger, intégrer) | Peu (intégrer + tester) | Aucune |
-| **Risque d'incohérence** | ⚠️ Élevé (3 fichiers séparés) | ✅ Faible (template unifié) | ✅ Très faible (vérifié auto) |
-| **Preuve que ça marche** | ❌ Vous devez tester | ⚠️ Vous lancez les tests | ✅ Copilot teste + screenshot |
-| **Impressionnant en démo** | 😐 | 🙂 | 🤯 |
+| **Vérification manuelle** | À chaque tour | Au 2ème tour | **Aucune** |
+| **Cohérence inter-fichiers** | ⚠️ Risque élevé | ✅ Template | ✅ Tout d'un bloc |
+| **Tests lancés** | Manuellement | Manuellement | **Automatiquement** |
+| **Preuve navigateur** | ❌ Non | ❌ Non | ✅ Screenshot |
+| **Si un test échoue** | Debug manuel (2-3 tours) | Debug manuel (1 tour) | **Copilot corrige et relance** |
+| **Réutilisable** | ❌ (refaire à chaque fois) | ✅ (même template) | ✅ (même agent) |
+| **Effet démo** | 😐 Normal | 🙂 Efficace | 🤯 Impressionnant |
 
 ---
 
@@ -2032,53 +2499,100 @@ Copilot fait TOUT :
 
 **Scénario final** : Montrer un workflow complet qui utilise TOUS les mécanismes en 1 seul prompt.
 
-**Pré-requis** :
-- ✅ Instructions projet actives (`.github/copilot-instructions.md`)
-- ✅ Instruction conditionnelle tests (`.github/instructions/tests.instructions.md`)
-- ✅ MCP Playwright actif (`MCP: List Servers` → Ready)
-- ✅ Agent `qa-tester` disponible
-- ✅ App qui tourne (`npm run dev`)
+---
 
-**Étape 1** — Sélectionner l'agent `qa-tester` dans le dropdown.
+##### Préparation (vérifier que tout est actif)
 
-**Étape 2** — Taper ce prompt unique :
+**Checklist** (30 secondes) :
 ```
-Ajoute un système de tags aux tâches :
-
-1. Modifie taskService.js pour supporter un champ tags (array de strings)
-2. Ajoute les endpoints : POST /api/tasks/:id/tags et DELETE /api/tasks/:id/tags/:tag
-3. Modifie le frontend pour afficher les tags comme des badges Boosted
-4. Lance les tests pour vérifier la non-régression
-5. Teste dans le navigateur :
-   - Crée une tâche
-   - Ajoute 2 tags
-   - Vérifie qu'ils s'affichent correctement
-   - Screenshot final
+✅ App qui tourne :              npm run dev (terminal VS Code)
+✅ Instructions actives :        .github/copilot-instructions.md existe
+✅ Instruction tests :           .github/instructions/tests.instructions.md existe
+✅ MCP Playwright :              Ctrl+Shift+P → MCP: List Servers → Ready
+✅ Agent qa-tester :             Dropdown agent → qa-tester visible
+✅ Panneau Output ouvert :       Ctrl+Shift+U → "GitHub Copilot Chat"
 ```
-
-**Étape 3** — Observer Copilot orchestrer TOUT :
-
-| Étape | Mécanisme utilisé | Ce qui se passe visuellement |
-|-------|-------------------|------------------------------|
-| Modifier taskService | Instructions projet (ES Modules, JSDoc) | Fichier modifié dans l'éditeur |
-| Créer endpoints | Instruction conditionnelle routes (format {data}) | Nouveau code dans tasks.js |
-| Frontend badges | Instructions Boosted (classes Orange) | Modification index.html |
-| Lancer tests | Tool `runTerminalCommand` | Terminal s'active, output visible |
-| Navigateur | Tool `useBrowser` (MCP Playwright) | Chromium s'ouvre, actions visibles |
-| Screenshot | Tool `browser_screenshot` | Image inline dans le chat |
-
-**Résultat en 1 seul prompt** :
-- ✅ Code modifié (3 fichiers) suivant les conventions du projet
-- ✅ Tests passés (visible dans le terminal)
-- ✅ Vérification visuelle (screenshot dans le chat)
-- ✅ Tout cohérent (grâce aux instructions)
-- ✅ Format compact (si caveman activé)
-
-**Ce qui aurait pris 20 min manuellement est fait en ~2 min par un seul prompt.**
 
 ---
 
-#### 📊 Tableau final — Impact cumulé de tous les mécanismes
+##### Exécution — 1 seul prompt
+
+**Étape 1** — Ouvrir Copilot Chat (`Ctrl+Alt+I`).
+
+**Étape 2** — Dropdown agent → sélectionner **`qa-tester`**.
+
+**Étape 3** — Taper ce prompt :
+```
+Ajoute un système de tags aux tâches :
+
+1. Modifie taskService.js : ajouter un champ tags (array de strings) aux tâches, 
+   ajouter les méthodes addTag(taskId, tag) et removeTag(taskId, tag)
+2. Ajoute les endpoints POST /api/tasks/:id/tags et DELETE /api/tasks/:id/tags/:tag
+3. Modifie public/index.html : afficher les tags comme des badges Boosted sous le titre
+4. Crée les tests pour les nouvelles méthodes dans tests/taskService.test.js
+5. Lance tous les tests (npm test) pour vérifier la non-régression
+6. Teste dans le navigateur :
+   - Crée une tâche "Démo Tags"
+   - Appelle POST /api/tasks/{id}/tags avec tag "urgent"
+   - Vérifie que le badge "urgent" s'affiche
+   - Screenshot final de preuve
+```
+
+**Étape 4** — Observer l'orchestration en temps réel.
+
+**Ce qui se passe dans VS Code** (ce que l'audience VOIT) :
+
+| Temps | Ce qui se passe à l'écran | Mécanisme utilisé |
+|-------|--------------------------|-------------------|
+| 0-5s | Copilot réfléchit ("Thinking...") | Agent qa-tester persona |
+| 5-15s | Fichier `taskService.js` s'ouvre et se modifie | Tool: editFiles + Instructions projet (ESM, JSDoc) |
+| 15-25s | Fichier `src/routes/tasks.js` se modifie | Tool: editFiles + Instruction conditionnelle routes |
+| 25-35s | `public/index.html` se modifie | Tool: editFiles + Instructions Boosted (badges) |
+| 35-45s | Fichier de tests créé/modifié | Tool: editFiles + Instruction tests (describe/it) |
+| 45-55s | Terminal s'active : `npm test` s'exécute | Tool: runTerminalCommand |
+| 55-65s | Output "41 tests, 0 failures" | Résultat du terminal |
+| 65-75s | Navigateur Chromium s'ouvre sur localhost:3000 | Tool: useBrowser (MCP Playwright) |
+| 75-85s | Actions automatiques dans le navigateur | browser_navigate, browser_click |
+| 85-95s | Screenshot pris | browser_screenshot |
+| 95-100s | Rapport final avec screenshot inline | Agent qa-tester format |
+
+**Résultat dans le chat** :
+```
+### 🧪 Test QA — Système de tags
+
+✅ PASS — taskService.js modifié (addTag, removeTag ajoutés avec JSDoc)
+✅ PASS — Endpoints POST/DELETE /api/tasks/:id/tags créés
+✅ PASS — Frontend : badges Boosted ajoutés dans index.html
+✅ PASS — Tests : 5 nouveaux tests ajoutés
+✅ PASS — npm test : 34/34 passent (0 échecs)
+✅ PASS — Navigateur : badge "urgent" visible
+
+📷 Screenshot final :
+[Image montrant la tâche "Démo Tags" avec le badge "urgent" en orange]
+
+Résumé : 6/6 étapes passées ✅
+```
+
+---
+
+##### Ce qui a été utilisé simultanément :
+
+| Mécanisme | Rôle dans cette démo | Preuve visible |
+|-----------|---------------------|----------------|
+| **Instructions projet** | Code en ES Modules, JSDoc, français | Voir le code généré |
+| **Instruction conditionnelle routes** | Format { data }, try/catch | Voir tasks.js modifié |
+| **Instruction conditionnelle tests** | describe/it, cas limites | Voir le fichier test |
+| **Custom Agent (qa-tester)** | Format rapport ✅/❌, workflow multi-étapes | Format de la réponse |
+| **Tool: editFiles** | Modifier les fichiers | Fichiers qui changent dans l'éditeur |
+| **Tool: runTerminalCommand** | Lancer npm test | Terminal actif avec output |
+| **MCP Playwright** | Ouvrir navigateur, cliquer, vérifier | Chromium visible + screenshots |
+| **Prompt bien structuré** | Instructions claires en liste | 1 seul prompt = tout |
+
+**Ce qui aurait pris 20-30 min manuellement est fait en ~2 min par un seul prompt.**
+
+---
+
+##### 📊 Tableau final — Impact cumulé de tous les mécanismes
 
 | Configuration | Tokens/prompt (moyenne) | Qualité 1er coup | Cohérence projet | Actions auto |
 |--------------|------------------------|-------------------|------------------|-------------|
