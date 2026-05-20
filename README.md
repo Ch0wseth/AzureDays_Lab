@@ -977,7 +977,133 @@ Observer : Copilot crée automatiquement le fichier dans `.github/instructions/`
 
 ---
 
-### 5g. Résumé — Quoi utiliser quand
+### 5g. Sub-Agents — Orchestrer plusieurs agents ensemble
+
+**Ce que c'est** : En mode Agent, Copilot peut invoquer d'autres participants/agents spécialisés avec `@nom`. Les custom agents peuvent aussi se référencer entre eux pour des workflows multi-étapes.
+
+#### Les participants intégrés (built-in)
+
+| Participant | Ce qu'il fait | Quand l'utiliser |
+|------------|--------------|-----------------|
+| `@workspace` | Cherche dans tout le projet (indexation sémantique) | Questions sur l'architecture globale |
+| `@terminal` | Exécute des commandes dans le terminal | Lancer tests, builds, scripts |
+| `@vscode` | Contrôle l'éditeur (settings, extensions, thèmes) | Configuration VS Code |
+
+#### 🔬 Manipulation — Utiliser les participants intégrés
+
+**Étape 1** — Ouvrir Copilot Chat. Taper `@` pour voir la liste des participants disponibles :
+- `@workspace`
+- `@terminal`
+- `@vscode`
+- Vos custom agents (`@code-reviewer`, `@caveman-mode`)
+
+**Étape 2** — Tester `@workspace` (recherche dans tout le projet) :
+```
+@workspace Où est définie la logique de validation des tâches ?
+```
+Observer : Copilot cherche dans TOUT le projet et trouve les fichiers pertinents (même fermés).
+
+**Étape 3** — Tester `@terminal` (exécution de commandes) :
+```
+@terminal Lance les tests unitaires et dis-moi combien passent
+```
+Observer : Copilot exécute `npm test` et interprète le résultat.
+
+**Étape 4** — Tester `@vscode` (contrôle de l'éditeur) :
+```
+@vscode Active le thème sombre et augmente la taille de police à 16
+```
+Observer : Copilot modifie les settings VS Code en direct.
+
+#### 🔬 Manipulation — Invoquer un custom agent comme sub-agent
+
+**Étape 1** — En mode Agent (pas Ask), taper :
+```
+@code-reviewer Analyse les fichiers modifiés dans le dernier commit
+```
+Observer : l'agent code-reviewer est invoqué avec son persona (format 🔴🟡🟢).
+
+**Étape 2** — Combiner un participant et un agent dans la même conversation :
+```
+@workspace Trouve tous les endpoints API qui n'ont pas de validation d'entrée
+```
+Puis dans le même chat :
+```
+@code-reviewer Pour chaque endpoint trouvé, propose un fix
+```
+
+#### 🔬 Manipulation — Créer un agent qui orchestre d'autres outils
+
+**Étape 1** — Créer `.github/agents/full-review.agent.md` :
+```
+Ctrl+Shift+P → File: New File → .github/agents/full-review.agent.md
+```
+
+**Étape 2** — Écrire un agent orchestrateur :
+```markdown
+---
+description: "Revue complète : code + tests + accessibilité"
+tools: ["changes", "editFiles", "runTerminalCommand"]
+---
+# Full Review Agent
+
+Tu es un agent de revue complète. Quand on te demande de reviewer, tu effectues 3 passes :
+
+## Passe 1 — Qualité du code
+- Vérifie la cohérence avec les conventions du projet
+- Cherche les bugs potentiels
+- Vérifie la présence de JSDoc
+
+## Passe 2 — Tests
+- Vérifie que les fonctions modifiées ont des tests
+- Lance `npm test` pour confirmer que tout passe
+- Propose des tests manquants
+
+## Passe 3 — Accessibilité (si fichiers HTML/CSS modifiés)
+- Vérifie les aria-labels
+- Vérifie le contraste des couleurs
+- Vérifie la navigation clavier
+
+## Format de sortie
+```
+### 📋 Revue complète
+
+#### Code (X issues)
+- 🔴/🟡/🟢 ...
+
+#### Tests (X manquants)
+- ...
+
+#### Accessibilité (X problèmes)
+- ...
+
+### ✅ Verdict : APPROUVÉ / ⚠️ À CORRIGER
+```
+```
+
+**Étape 3** — Sélectionner `full-review` dans le dropdown, taper :
+```
+Fais une revue complète du projet
+```
+
+**Étape 4** — Observer : l'agent exécute les 3 passes, lance les tests via le terminal, et produit un rapport structuré.
+
+#### 📊 Comment voir l'effet
+
+| Approche | Effort | Couverture |
+|----------|--------|-----------|
+| Chat normal : "Review mon code" | 1 prompt | Superficiel, généraliste |
+| `@code-reviewer` seul | 1 prompt | Sécurité + Perf uniquement |
+| `@full-review` orchestrateur | 1 prompt | Code + Tests + A11y (3 passes) |
+| 3 prompts séparés manuellement | 3 prompts, 3 conversations | Même couverture mais 3x plus d'effort |
+
+**Ce qui différencie un sub-agent** :
+- Un agent normal = un persona avec des instructions
+- Un sub-agent/orchestrateur = un persona qui **enchaîne plusieurs étapes** et **utilise des outils** (terminal, fichiers, navigateur)
+
+---
+
+### 5h. Résumé — Quoi utiliser quand
 
 | Outil | Fichier | Quand l'utiliser | Effet |
 |-------|---------|-----------------|-------|
@@ -985,6 +1111,8 @@ Observer : Copilot crée automatiquement le fichier dans `.github/instructions/`
 | **Instructions conditionnelles** | `.github/instructions/*.md` | Conventions pour un TYPE de fichier | Injecté seulement quand le glob matche |
 | **Prompt Files** | `.github/prompts/*.prompt.md` | Patterns récurrents (créer route, service, test) | Invocable avec `/nom` |
 | **Custom Agents** | `.github/agents/*.agent.md` | Personas spécialisés (reviewer, caveman) | Sélectionnable dans le dropdown |
+| **Sub-Agents / Participants** | Built-in (`@workspace`, `@terminal`, `@vscode`) | Recherche projet, exécution, contrôle éditeur | Invocable avec `@nom` dans le chat |
+| **Agent orchestrateur** | `.github/agents/*.agent.md` + `tools` | Workflows multi-passes automatisés | 1 prompt → plusieurs étapes enchaînées |
 | **MCP Servers** | `.vscode/mcp.json` | Donner des CAPACITÉS à Copilot (naviguer, DB, API) | Outils supplémentaires en mode Agent |
 | **Skills** | Prompt File + MCP combinés | Workflows complets automatisés | Enchaîne instructions + actions |
 
