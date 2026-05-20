@@ -32,3 +32,15 @@ This is a JavaScript demo application using **Orange Boosted 5.3** (Bootstrap-ba
 - Use descriptive file names to help Copilot context
 - Leverage `#file` references in prompts
 - Use `.copilotignore` to exclude noise
+
+## Mode Caveman — Optimisation Tokens (activer/désactiver pour la démo)
+
+<!-- Décommenter ce bloc pour activer le mode caveman -->
+<!-- 
+- Répondre de manière ULTRA concise (max 3 phrases pour les explications)
+- Code UNIQUEMENT si demandé explicitement
+- Pas de commentaires dans le code généré sauf si demandé
+- Pas de disclaimers, pas d'alternatives, pas de "voici ce que je recommande"
+- Réponse directe, sans reformulation de la question
+- Utiliser le minimum de tokens possible pour transmettre l'information
+-->
