@@ -16,9 +16,9 @@
 7. [DÉMO 3 — Génération de documentation](#-démo-3--génération-de-documentation)
 8. [DÉMO 4 — Modes Copilot (Ask, Edit, Agent)](#-démo-4--modes-copilot-ask-edit-agent)
 9. [DÉMO 5 — Custom Agents, Prompts, Instructions & MCP](#-démo-5--custom-agents-prompts-instructions--mcp)
-10. [Gestion du Contexte](#-gestion-du-contexte-dans-github-copilot)
-11. [Bonnes Pratiques de Prompting](#-bonnes-pratiques-de-prompting-pour-copilot)
-12. [DÉMO 6 — Optimisation tokens (Caveman Mode)](#-démo-6--optimisation-des-tokens-caveman-mode)
+10. [DÉMO 6 — Gestion du Contexte](#-démo-6--gestion-du-contexte-influence-directe-sur-la-qualité-et-les-tokens)
+11. [DÉMO 7 — Bonnes Pratiques de Prompting](#-démo-7--bonnes-pratiques-de-prompting-avantaprès-mesurable)
+12. [DÉMO 8 — Optimisation tokens (Caveman Mode)](#-démo-8--optimisation-des-tokens-caveman-mode)
 13. [Structure du projet](#-structure-du-projet)
 14. [Checklist Jour-J](#-checklist-jour-j)
 15. [Ressources](#-ressources)
@@ -636,7 +636,10 @@ Installe l'instruction "nodejs" depuis awesome-copilot
 
 ---
 
-## 🧠 Gestion du Contexte dans GitHub Copilot
+## 🎬 DÉMO 6 — Gestion du Contexte (Influence directe sur la qualité et les tokens)
+
+### 🎯 Objectif
+Démontrer visuellement que le contexte envoyé à Copilot change radicalement la qualité des réponses ET la consommation de tokens. Chaque sous-démo montre un avant/après mesurable.
 
 > ⚠️ **Tout se fait dans VS Code.** Le contexte est ce que Copilot "voit" quand il répond. Plus vous le maîtrisez, plus les réponses sont pertinentes et moins vous consommez de tokens.
 
@@ -897,7 +900,10 @@ Observer : les instructions de test ne s'appliquent PAS ici (fichier hors du glo
 
 ---
 
-## 📐 Bonnes Pratiques de Prompting pour Copilot
+## 🎬 DÉMO 7 — Bonnes Pratiques de Prompting (Avant/Après mesurable)
+
+### 🎯 Objectif
+Prouver par A/B testing que la formulation du prompt impacte directement la qualité ET le coût en tokens. Chaque pratique se démontre en 2 min avec un mauvais prompt puis un bon prompt.
 
 > ⚠️ **Tout se fait dans VS Code** — aucun outil externe requis.
 
@@ -1358,7 +1364,7 @@ Pour voir l'impact cumulé de toutes les pratiques, faire cette manipulation :
 
 ---
 
-## 🎬 DÉMO 6 — Optimisation des Tokens (Caveman Mode)
+## 🎬 DÉMO 8 — Optimisation des Tokens (Caveman Mode)
 
 ### 🎯 Objectif
 Prouver concrètement qu'on peut réduire de 50-70% la consommation de tokens sans perdre en qualité.
@@ -1387,7 +1393,7 @@ Renommer le fichier pour l'activer :
 mv .github/instructions/caveman-mode.instructions.md.disabled .github/instructions/caveman-mode.instructions.md
 ```
 
-> **Note** : Ce fichier est livré désactivé (`.disabled`) par défaut pour ne pas affecter les démos 1-5.
+> **Note** : Ce fichier est livré désactivé (`.disabled`) par défaut pour ne pas affecter les démos 1-7.
 
 **Étape 2 — Ouvrir une NOUVELLE conversation** (important pour reset le contexte) :
 - Cliquer sur `+` dans Copilot Chat (nouvelle conversation)
@@ -1538,7 +1544,7 @@ copilot-demo-orange/
 │   ├── agents/
 │   │   └── caveman-mode.agent.md            # 🦴 Agent Caveman (github/awesome-copilot)
 │   ├── instructions/
-│   │   └── caveman-mode.instructions.md.disabled  # 🦴 Instruction terse (activer pour démo 6)
+│   │   └── caveman-mode.instructions.md.disabled  # 🦴 Instruction terse (activer pour démo 8)
 │   └── prompts/
 │       ├── generate-route.prompt.md         # 📝 Template: nouveau endpoint
 │       ├── generate-tests.prompt.md         # 📝 Template: tests unitaires
@@ -1602,7 +1608,9 @@ copilot-demo-orange/
 [ ] Démo 3 — Génération docs        → /doc + /** inline
 [ ] Démo 4 — Modes Ask/Edit/Agent   → 3 modes montrés
 [ ] Démo 5 — Personnalisation       → instructions, prompts, MCP
-[ ] Démo 6 — Optimisation tokens    → caveman activé, comparaison faite
+[ ] Démo 6 — Gestion du contexte   → avant/après tokens IN mesurés
+[ ] Démo 7 — Bonnes pratiques      → A/B testing prompts
+[ ] Démo 8 — Optimisation tokens   → caveman activé, comparaison faite
 ```
 
 ### APRÈS la démo
