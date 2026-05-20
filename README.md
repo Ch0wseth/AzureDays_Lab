@@ -1,55 +1,125 @@
-# 🤖 Copilot Demo - Orange Boosted
+# 🤖 GitHub Copilot Demo — Orange Boosted
 
-> **Guide complet et reproductible** — Chaque démo est détaillée avec le modus operandi exact,
-> ce qu'il faut taper, ce qu'il faut montrer, et le résultat attendu.
+> **Guide 100% reproductible** — Suivez ce README pas à pas pour réaliser la démo complète.
+> Chaque étape indique **exactement** ce qu'il faut faire, taper, et observer.
+
+---
+
+## Table des matières
+
+1. [Pré-requis](#-pré-requis)
+2. [Installation pas à pas](#-installation-pas-à-pas)
+3. [Configuration VS Code](#-configuration-vs-code)
+4. [Suivi des tokens](#-suivi-des-tokens-tout-au-long-de-la-démo)
+5. [DÉMO 1 — Génération de code](#-démo-1--génération-de-code)
+6. [DÉMO 2 — Génération de tests](#-démo-2--génération-de-tests)
+7. [DÉMO 3 — Génération de documentation](#-démo-3--génération-de-documentation)
+8. [DÉMO 4 — Modes Copilot (Ask, Edit, Agent)](#-démo-4--modes-copilot-ask-edit-agent)
+9. [DÉMO 5 — Custom Agents, Prompts, Instructions & MCP](#-démo-5--custom-agents-prompts-instructions--mcp)
+10. [DÉMO 6 — Optimisation tokens (Caveman Mode)](#-démo-6--optimisation-des-tokens-caveman-mode)
+11. [Structure du projet](#-structure-du-projet)
+12. [Checklist Jour-J](#-checklist-jour-j)
+13. [Ressources](#-ressources)
 
 ---
 
 ## 📋 Pré-requis
 
-| Outil | Version min. | Installation |
-|-------|-------------|-------------|
-| Node.js | 20+ | https://nodejs.org |
-| VS Code | 1.100+ | https://code.visualstudio.com |
-| GitHub Copilot | Extension | Marketplace → `github.copilot` |
-| GitHub Copilot Chat | Extension | Marketplace → `github.copilot-chat` |
-| Playwright Test for VS Code | Extension | Marketplace → `ms-playwright.playwright` |
-| Docker (optionnel) | Pour MCP awesome-copilot | https://docker.com |
+### Outils à installer AVANT la démo
 
-> **Licence** : GitHub Copilot Individual, Business ou Enterprise requise.
+| Outil | Version min. | Pourquoi | Comment vérifier |
+|-------|:---:|---------|---------|
+| Node.js | 20+ | Runtime de l'app | `node --version` |
+| npm | 10+ | Gestionnaire de paquets | `npm --version` |
+| VS Code | 1.100+ | IDE de la démo | `code --version` |
+| Git | 2.40+ | Cloner le repo | `git --version` |
+| Docker | 24+ | MCP awesome-copilot (optionnel) | `docker --version` |
+
+### Extensions VS Code à installer
+
+Ouvrir VS Code → `Ctrl+Shift+X` (Extensions) → Installer :
+
+| Extension | ID | Obligatoire |
+|-----------|-----|:---:|
+| GitHub Copilot | `github.copilot` | ✅ |
+| GitHub Copilot Chat | `github.copilot-chat` | ✅ |
+| Playwright Test | `ms-playwright.playwright` | ✅ |
+
+**Ou via le terminal** :
+```bash
+code --install-extension github.copilot
+code --install-extension github.copilot-chat
+code --install-extension ms-playwright.playwright
+```
+
+### Licence GitHub Copilot
+
+Une licence active est nécessaire : Individual, Business, ou Enterprise.
+Vérifier : https://github.com/settings/copilot
 
 ---
 
-## 🚀 Installation
+## 🚀 Installation pas à pas
+
+### Étape 1 — Cloner le repository
 
 ```bash
-git clone <url-du-repo> copilot-demo-orange
+git clone https://github.com/YOUR_USERNAME/copilot-demo-orange.git
 cd copilot-demo-orange
+```
+
+### Étape 2 — Installer les dépendances Node.js
+
+```bash
 npm install
+```
+
+> ✅ **Vérification** : Le dossier `node_modules/` est créé, pas d'erreur dans le terminal.
+
+### Étape 3 — Installer les navigateurs Playwright
+
+```bash
 npx playwright install chromium
 ```
 
----
+> ✅ **Vérification** : Le message "Downloading Chromium..." apparaît puis "chromium installed".
 
-## ⚠️ Avant la démo : Désactiver le Caveman Mode
+### Étape 4 — Vérifier que tout fonctionne
 
-Le fichier `.github/instructions/caveman-mode.instructions.md` s'applique à **tous les fichiers** automatiquement.
-Pour la démo, on veut le mode normal d'abord, puis activer caveman pour comparer.
-
-**Action** : Renommer temporairement le fichier avant la démo :
 ```bash
-mv .github/instructions/caveman-mode.instructions.md .github/instructions/caveman-mode.instructions.md.disabled
+# Lancer les tests unitaires
+npm test
 ```
 
-On le réactivera à l'étape 6.
+> ✅ **Résultat attendu** : `Test Suites: 2 passed, 2 total` et `Tests: 29 passed, 29 total`
+
+```bash
+# Lancer le serveur
+npm run dev
+```
+
+> ✅ **Résultat attendu** : `🚀 Copilot Demo running at http://localhost:3000`
+
+### Étape 5 — Ouvrir dans VS Code
+
+```bash
+code .
+```
+
+### Étape 6 — Vérifier l'app dans le navigateur
+
+Ouvrir http://localhost:3000 dans Chrome/Firefox.
+
+> ✅ **Résultat attendu** : Page avec fond sombre (Orange Boosted dark mode), navbar Orange, titre "GitHub Copilot Demo", sections Tâches/Analytiques/Copilot.
 
 ---
 
-## 📊 Suivi des Tokens (tout au long de la démo)
+## ⚙️ Configuration VS Code
 
-### Activer le suivi
+### Settings pour le suivi des tokens
 
-Dans VS Code → `settings.json` :
+Ouvrir les settings (`Ctrl+,`) → cliquer sur l'icône `{}` en haut à droite (Open Settings JSON) → ajouter :
+
 ```json
 {
   "github.copilot.advanced.debug.showTokenCount": true,
@@ -57,283 +127,502 @@ Dans VS Code → `settings.json` :
 }
 ```
 
-Ou : Output Panel (`Ctrl+Shift+U`) → dropdown → `GitHub Copilot Chat`
+### Vérifier que les MCP servers sont détectés
 
-### Dashboard en ligne
+1. Ouvrir la palette de commandes : `Ctrl+Shift+P`
+2. Taper : `MCP: List Servers`
+3. Vous devez voir :
+   - ✅ `playwright` — Status: Ready (ou "Not Started" → il démarrera au premier usage)
+   - ✅ `awesome-copilot` — Status: Ready (nécessite Docker) ou erreur si Docker n'est pas lancé
 
-https://github.com/settings/copilot → section "Usage"
+> **Si le MCP Playwright n'apparaît pas** : vérifier que `.vscode/mcp.json` existe et recharger VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`).
 
-### Tableau de suivi à remplir pendant la démo
+### Vérifier que les Custom Instructions sont chargées
 
-| # | Étape | Ce qu'on demande | Tokens In | Tokens Out | Observation |
-|---|-------|-----------------|-----------|------------|-------------|
-| 1 | Génération code | Nouveau service | ___ | ___ | |
-| 2 | Génération tests | /tests sur taskService | ___ | ___ | |
-| 3 | Génération docs | /doc sur une fonction | ___ | ___ | |
-| 4 | Mode Ask | "Explique getTasks" | ___ | ___ | |
-| 5 | Mode Edit | Ajout validation inline | ___ | ___ | |
-| 6 | Mode Agent | Ajout catégories multi-fichiers | ___ | ___ | |
-| 7 | Custom Prompt | /generate-route | ___ | ___ | |
-| 8 | MCP Playwright | Navigation + screenshot | ___ | ___ | |
-| 9 | Caveman Mode | Même question qu'étape 4 | ___ | ___ | **Comparer avec #4** |
-| 10 | .copilotignore off | Supprimer .copilotignore + question | ___ | ___ | **Comparer avec #4** |
+1. Ouvrir `.github/copilot-instructions.md`
+2. Ouvrir Copilot Chat (`Ctrl+Shift+I`)
+3. Taper : `Quel framework CSS utilise ce projet ?`
+4. Copilot doit répondre "Orange Boosted" (preuve qu'il a lu les instructions)
+
+---
+
+## 📊 Suivi des Tokens (tout au long de la démo)
+
+### Où voir les tokens
+
+| Méthode | Comment | Ce qu'on voit |
+|---------|---------|---------------|
+| Output Panel | `Ctrl+Shift+U` → dropdown → `GitHub Copilot Chat` | Logs détaillés avec token counts |
+| Chat Header | En haut de chaque réponse dans Copilot Chat | Nombre de tokens (si setting activé) |
+| Dashboard GitHub | https://github.com/settings/copilot → Usage | Consommation globale par jour |
+
+### Tableau de suivi — À IMPRIMER ou ouvrir à côté
+
+Remplir ce tableau **à chaque étape** de la démo :
+
+| # | Étape | Prompt exact | Tokens In | Tokens Out | Total | Observation |
+|---|-------|-------------|:---------:|:----------:|:-----:|-------------|
+| 1 | Génération code | _(commentaire JSDoc)_ | | | | Baseline |
+| 2 | Génération tests | `/tests #file:src/services/taskService.js` | | | | |
+| 3 | Génération docs | `/doc` sur sanitizeInput | | | | |
+| 4 | Mode Ask | `Explique le filtrage dans getTasks()...` | | | | **Référence pour comparer** |
+| 5 | Mode Edit | `Ajoute validation description max 500...` | | | | |
+| 6 | Mode Agent | `Ajoute un système de catégories...` | | | | Agent = plus de tokens |
+| 7 | Custom Prompt | `/generate-route` | | | | Prompt pré-défini |
+| 8 | MCP Playwright | `Navigue vers localhost:3000...` | | | | |
+| 9 | Caveman Mode | **Même prompt que #4** | | | | **Comparer OUT avec #4** |
+| 10 | Sans .copilotignore | **Même prompt que #4** | | | | **Comparer IN avec #4** |
 
 ---
 
 ## 🎬 DÉMO 1 — Génération de Code
 
-### Objectif
-Montrer que Copilot génère du code JS complet à partir d'un commentaire.
+### 🎯 Objectif
+Montrer que Copilot génère du code JS complet et de qualité à partir d'un simple commentaire.
 
-### Modus Operandi
+### ⏱️ Durée estimée : 3 minutes
 
-1. **Ouvrir** VS Code sur le projet
-2. **Lancer** le serveur : `npm run dev` (terminal intégré)
-3. **Créer** un nouveau fichier : `src/services/categoryService.js`
-4. **Taper exactement** :
+### 📝 Modus Operandi
+
+**Ce que vous faites** :
+
+1. Dans VS Code, **créer un nouveau fichier** :
+   - Clic droit sur `src/services/` → New File → nommer `categoryService.js`
+
+2. **Taper exactement ce contenu** (ne PAS copier-coller, taper pour que Copilot propose) :
 
 ```javascript
 /**
  * @fileoverview Category management service.
  * Provides CRUD operations for task categories.
+ * Uses in-memory storage like taskService.
  * @module services/categoryService
  */
 
+// Available categories
+const DEFAULT_CATEGORIES = ['bug', 'feature', 'documentation', 'test'];
+
 ```
 
-5. **Attendre** — Copilot va proposer le code (ghost text gris)
-6. **Accepter** avec `Tab`
-7. **Montrer** : Copilot a généré un service CRUD complet avec JSDoc
+3. **Placer le curseur** à la ligne vide après `DEFAULT_CATEGORIES`
 
-### Ce qu'on montre à l'audience
-- La vitesse de génération
-- La qualité du code (JSDoc, validation, structure)
-- La cohérence avec le reste du projet (même pattern que `taskService.js`)
+4. **Taper** : `export function` → **ATTENDRE** que le ghost text (gris) apparaisse
 
-### Résultat attendu
-Un service avec `createCategory()`, `getCategories()`, `deleteCategory()` etc.
+5. **Accepter** avec `Tab`
 
-> 📊 **Noter les tokens** dans le tableau (ligne 1)
+6. **Continuer** : placer le curseur après la fonction générée, appuyer `Enter` 2 fois → Copilot propose la fonction suivante
+
+7. **Répéter** jusqu'à avoir 3-4 fonctions
+
+### ✅ Résultat attendu
+
+Copilot génère un service complet avec :
+- `createCategory(name)` — Ajoute une catégorie avec validation
+- `getCategories()` — Liste toutes les catégories
+- `deleteCategory(name)` — Supprime une catégorie
+- `isValidCategory(name)` — Vérifie si une catégorie existe
+
+Chaque fonction a :
+- Du JSDoc automatique (parce qu'on a mis un `@fileoverview`)
+- De la validation d'entrée (cohérent avec `taskService.js`)
+- Le même style ES Module que le reste du projet
+
+### 💬 Ce qu'on dit à l'audience
+
+> "Je n'ai écrit que le commentaire de header et le tableau de catégories.
+> Copilot a compris le pattern du projet (il a vu taskService.js) et génère
+> un service complet avec la même structure, les mêmes conventions."
+
+### 📊 TOKENS — Noter dans le tableau (ligne 1)
 
 ---
 
 ## 🎬 DÉMO 2 — Génération de Tests
 
-### Objectif
-Montrer la génération automatique de tests unitaires.
+### 🎯 Objectif
+Montrer que Copilot génère des tests unitaires complets et pertinents.
 
-### Modus Operandi
+### ⏱️ Durée estimée : 3 minutes
+
+### 📝 Modus Operandi
+
+**Méthode 1 — Commande /tests** :
 
 1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
-2. **Taper** :
+2. **Taper exactement** :
 
 ```
 /tests #file:src/services/taskService.js
 ```
 
-3. **Montrer** le résultat : suite de tests Jest complète
-4. **Alternative** — Utiliser le prompt file :
-   - Taper `/` dans le chat
-   - Sélectionner `generate-tests`
-   - Indiquer le fichier cible
+3. **Attendre** la génération (5-10 secondes)
+4. **Montrer** le résultat : suite Jest complète
 
-### Ce qu'on montre à l'audience
-- La commande `/tests` intégrée
-- L'utilisation de `#file:` pour cibler un fichier précis (= moins de tokens)
-- Les tests couvrent les cas positifs ET négatifs
+**Méthode 2 — Prompt File personnalisé** :
 
-### Résultat attendu
-~15-20 tests couvrant `createTask`, `getTasks`, `updateTask`, `deleteTask`, `getTaskStats`
+1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+2. **Taper** `/` (slash) → une liste de prompts apparaît
+3. **Sélectionner** `generate-tests`
+4. **Compléter** avec : `pour le fichier src/utils/validators.js`
+5. **Montrer** : Copilot utilise le template du prompt file pour structurer les tests
 
-> 📊 **Noter les tokens** (ligne 2)
+### ✅ Résultat attendu
+
+Pour `taskService.js`, Copilot génère ~15-20 tests couvrant :
+- ✅ Création avec données valides
+- ✅ Erreurs sur titre trop court/long
+- ✅ Priorité invalide
+- ✅ Filtrage par status et priority
+- ✅ Mise à jour partielle
+- ✅ Suppression existante/inexistante
+- ✅ Statistiques
+
+### 💬 Ce qu'on dit à l'audience
+
+> "Deux méthodes : la commande intégrée `/tests` qui marche out-of-the-box,
+> et les Prompt Files custom dans `.github/prompts/` qui permettent de
+> standardiser la génération de tests selon VOS conventions (Jest, describe/it, etc.)"
+
+### 📊 TOKENS — Noter dans le tableau (ligne 2)
 
 ---
 
 ## 🎬 DÉMO 3 — Génération de Documentation
 
-### Objectif
-Montrer la génération de documentation JSDoc.
+### 🎯 Objectif
+Montrer que Copilot génère de la documentation JSDoc riche et précise.
 
-### Modus Operandi
+### ⏱️ Durée estimée : 2 minutes
+
+### 📝 Modus Operandi
+
+**Méthode 1 — Commande /doc dans le chat** :
 
 1. **Ouvrir** `src/utils/validators.js`
-2. **Sélectionner** la fonction `sanitizeInput` (lignes 19-27)
+2. **Sélectionner** la fonction `sanitizeInput` (lignes 19-27 environ)
 3. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
-4. **Taper** :
+4. **Taper exactement** :
 
 ```
-/doc Génère la documentation complète avec exemples d'utilisation
+/doc Génère la documentation JSDoc complète avec des exemples d'usage pour cette fonction
 ```
 
-5. **Montrer** : JSDoc enrichi avec `@example`, `@param`, `@returns`
+5. **Montrer** : Copilot génère un JSDoc enrichi avec `@example`
 
-### Alternative inline
+**Méthode 2 — Inline (autocomplétion)** :
 
-1. Placer le curseur au-dessus d'une fonction sans JSDoc
-2. Taper `/**` puis Entrée
-3. Copilot complète automatiquement le bloc JSDoc
+1. **Ouvrir** `src/services/taskService.js`
+2. **Aller** à la ligne juste au-dessus de `function generateId()` (ligne ~107)
+3. **Supprimer** le commentaire existant `/** Generates a simple unique ID. */`
+4. **Taper** `/**` puis appuyer `Enter`
+5. **Observer** : Copilot complète automatiquement le bloc JSDoc
 
-### Résultat attendu
+### ✅ Résultat attendu
+
 ```javascript
 /**
- * Sanitizes a string to prevent XSS attacks.
- * @param {string} input - Raw input string from user.
+ * Sanitizes a string to prevent XSS attacks by escaping HTML entities.
+ * @param {string} input - Raw user input string to sanitize.
  * @returns {string} Sanitized string safe for HTML rendering.
  * @example
  * sanitizeInput('<script>alert("xss")</script>')
  * // Returns: '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;'
+ * @example
+ * sanitizeInput('Hello World')
+ * // Returns: 'Hello World'
  */
 ```
 
-> 📊 **Noter les tokens** (ligne 3)
+### 💬 Ce qu'on dit à l'audience
+
+> "La commande `/doc` génère de la documentation riche avec des exemples.
+> L'autocomplétion inline `/**` est plus rapide pour les fonctions simples.
+> Les deux bénéficient des instructions projet (JSDoc obligatoire, français)."
+
+### 📊 TOKENS — Noter dans le tableau (ligne 3)
 
 ---
 
 ## 🎬 DÉMO 4 — Modes Copilot (Ask, Edit, Agent)
 
-### 4a. Mode Ask
+### 🎯 Objectif
+Montrer les 3 modes d'interaction avec Copilot et leurs cas d'usage.
 
-**Objectif** : Poser des questions, comprendre du code.
-
-**Modus Operandi** :
-1. `Ctrl+Shift+I` pour ouvrir Copilot Chat
-2. **Taper** :
-
-```
-Explique-moi comment fonctionne le filtrage dans la fonction getTasks() et quels sont les risques de performance
-```
-
-3. **Montrer** : Copilot explique le code, identifie les O(n) multiples
-
-**Ce qu'on tape** : Juste la question ci-dessus.
-**Résultat attendu** : Explication détaillée + suggestion d'optimisation.
-
-> 📊 **Noter les tokens** (ligne 4) — ON COMPARERA AVEC LE CAVEMAN MODE À L'ÉTAPE 6
+### ⏱️ Durée estimée : 8 minutes (3 sous-démos)
 
 ---
 
-### 4b. Mode Edit (Inline)
+### 4a. Mode Ask — Comprendre du code
 
-**Objectif** : Modifier du code sans quitter l'éditeur.
+**Quand l'utiliser** : Questions sur le code, explications, revue, audit sécurité.
 
 **Modus Operandi** :
+
+1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+2. **S'assurer** que le mode est "Ask" (dropdown en haut du chat)
+3. **Taper exactement** :
+
+```
+Explique-moi comment fonctionne le filtrage dans la fonction getTasks() du fichier src/services/taskService.js et quels sont les risques de performance si on a 10000 tâches
+```
+
+4. **Attendre** la réponse complète
+
+**✅ Résultat attendu** :
+
+Copilot explique :
+- Le spread `[...tasks]` crée une copie
+- Les `.filter()` chaînés font des passes O(n) multiples
+- Le `.sort()` fait O(n log n) en plus
+- **Suggestion** : combiner les filtres en une seule passe, utiliser un index/Map
+
+**💬 Ce qu'on dit** :
+> "Le mode Ask sert à comprendre et auditer du code existant. Copilot a le contexte du fichier et répond précisément."
+
+### 📊 TOKENS — Noter dans le tableau (ligne 4) ⚠️ GARDER CE CHIFFRE, on le compare à l'étape 9
+
+---
+
+### 4b. Mode Edit — Modifier du code inline
+
+**Quand l'utiliser** : Modifications chirurgicales sans quitter l'éditeur.
+
+**Modus Operandi** :
+
 1. **Ouvrir** `src/services/taskService.js`
-2. **Sélectionner** la fonction `createTask` (lignes 20-40)
-3. **Appuyer** sur `Ctrl+I` (Edit inline)
-4. **Taper** :
+2. **Sélectionner** toute la fonction `createTask` (de `export function createTask` jusqu'à l'accolade fermante, ~lignes 20-42)
+3. **Appuyer** `Ctrl+I` → La barre d'édition inline apparaît
+4. **Taper exactement** :
 
 ```
-Ajoute la validation de la description : max 500 caractères, et log un warning si elle dépasse 200
+Ajoute la validation de la description : maximum 500 caractères. Si elle dépasse 200 caractères, log un console.warn avec le nombre de caractères.
 ```
 
-5. **Montrer** le diff inline (vert/rouge)
-6. **Accepter** ou **Rejeter**
+5. **Appuyer** Entrée
+6. **Observer** le diff inline :
+   - Lignes en **rouge** = code supprimé/modifié
+   - Lignes en **vert** = code ajouté
+7. **Cliquer** "Accept" (✓) ou "Reject" (✗)
 
-**Ce qu'on tape** : La commande ci-dessus dans la zone d'edit inline.
-**Résultat attendu** : Ajout de validation dans le corps de la fonction, pas de modification du reste.
+**✅ Résultat attendu** :
 
-> 📊 **Noter les tokens** (ligne 5)
+Copilot ajoute dans le corps de `createTask`, après la validation du titre :
+```javascript
+if (description.length > 500) {
+  throw new Error('Description must not exceed 500 characters');
+}
+if (description.length > 200) {
+  console.warn(`Description is ${description.length} characters (recommended: < 200)`);
+}
+```
+
+**💬 Ce qu'on dit** :
+> "Le mode Edit est chirurgical : on sélectionne, on décrit le changement en français,
+> Copilot propose un diff. Pas besoin de quitter le fichier ni de décrire tout le contexte."
+
+### 📊 TOKENS — Noter dans le tableau (ligne 5)
 
 ---
 
-### 4c. Mode Agent (multi-fichiers)
+### 4c. Mode Agent — Tâches multi-fichiers
 
-**Objectif** : Montrer la puissance du mode Agent qui modifie plusieurs fichiers.
+**Quand l'utiliser** : Nouvelles fonctionnalités complètes, refactoring cross-files.
 
 **Modus Operandi** :
-1. **Ouvrir** Copilot Chat
-2. **Sélectionner le mode** : cliquer sur le dropdown en haut du chat → choisir **"Agent"**
-3. **Taper** :
+
+1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+2. **Changer le mode** : cliquer sur le dropdown en haut → sélectionner **"Agent"**
+3. **Taper exactement** :
 
 ```
-Ajoute un système de catégories aux tâches :
-- Nouveau champ "category" (string) dans le task service
-- Les catégories possibles : "bug", "feature", "documentation", "test"
-- Validation à la création
-- Filtre par catégorie dans GET /api/tasks
-- Mise à jour du frontend : ajout d'un select dans le formulaire et dans les filtres
-- Tests unitaires pour la nouvelle fonctionnalité
+Ajoute un système de catégories aux tâches. Voici ce que je veux :
+
+1. Dans src/services/taskService.js :
+   - Ajouter un champ "category" aux tâches (valeurs: "bug", "feature", "documentation", "test")
+   - Valider la catégorie à la création (optionnelle, défaut: null)
+   - Permettre le filtrage par catégorie dans getTasks()
+
+2. Dans src/routes/tasks.js :
+   - Accepter le query param ?category= dans GET /api/tasks
+   - Accepter "category" dans le body de POST /api/tasks
+
+3. Dans public/index.html :
+   - Ajouter un <select> de catégorie dans le modal de création
+   - Ajouter un <select> de filtre par catégorie (à côté des filtres existants)
+
+4. Dans public/js/app.js :
+   - Envoyer la catégorie lors de la création
+   - Appliquer le filtre catégorie dans loadTasks()
+   - Afficher la catégorie sous forme de badge sur chaque tâche
+
+5. Créer tests/categoryFeature.test.js :
+   - Tester la création avec/sans catégorie
+   - Tester le filtrage par catégorie
+   - Tester la validation des catégories invalides
 ```
 
 4. **Observer** :
-   - Copilot affiche un **plan** avec les fichiers à modifier
-   - Il édite `taskService.js`, `tasks.js` (route), `index.html`, `app.js` (frontend)
-   - Il crée ou met à jour les tests
-5. **Reviewer** chaque modification avant d'accepter
+   - Copilot affiche un **plan d'exécution** (liste des fichiers à modifier)
+   - Il commence à modifier chaque fichier un par un
+   - Il peut demander confirmation pour continuer
+5. **Accepter** les modifications proposées (bouton "Apply" ou "Accept All")
+6. **Tester** :
 
-**Ce qu'on tape** : Le prompt ci-dessus.
-**Résultat attendu** : 4-6 fichiers modifiés avec un plan cohérent.
+```bash
+npm test
+```
 
-> 📊 **Noter les tokens** (ligne 6) — Le mode Agent consomme plus car il planifie
+**✅ Résultat attendu** :
+- 5-6 fichiers modifiés/créés
+- L'app affiche les catégories dans le formulaire et les filtres
+- Les tests passent
+
+**💬 Ce qu'on dit** :
+> "Le mode Agent est le plus puissant. Il planifie, modifie plusieurs fichiers,
+> et peut même lancer des commandes. C'est comme un pair programmer IA.
+> Attention : il consomme plus de tokens car il doit comprendre tout le contexte."
+
+### 📊 TOKENS — Noter dans le tableau (ligne 6) — Comparer avec les modes Ask/Edit
 
 ---
 
 ## 🎬 DÉMO 5 — Custom Agents, Prompts, Instructions & MCP
 
+### 🎯 Objectif
+Montrer la personnalisation de Copilot pour l'adapter à un projet/équipe.
+
+### ⏱️ Durée estimée : 10 minutes (4 sous-démos)
+
+---
+
 ### 5a. Instructions personnalisées
 
-**Objectif** : Montrer que Copilot respecte les conventions du projet.
+**Ce que c'est** : Un fichier `.github/copilot-instructions.md` qui donne du contexte permanent à Copilot.
 
 **Modus Operandi** :
-1. **Ouvrir** `.github/copilot-instructions.md` → montrer le contenu à l'audience
-2. **Aller** dans Copilot Chat
+
+1. **Ouvrir** `.github/copilot-instructions.md` dans VS Code → **montrer le contenu à l'audience** :
+
+```markdown
+## Project Context
+This is a JavaScript demo application using **Orange Boosted 5.3**...
+
+## Code Style
+- Use ES Modules (`import/export`)
+- Use JSDoc for all exported functions
+- All UI text in French
+
+## Orange Boosted Guidelines
+- Always use Boosted classes instead of custom CSS
+- Follow Orange Design System color palette (primary: #ff7900)
+```
+
+2. **Ouvrir** Copilot Chat
 3. **Taper** :
 
 ```
-Crée un nouveau endpoint GET /api/health/details qui retourne l'uptime et la mémoire utilisée
+Crée un nouveau composant HTML pour afficher un message de succès quand une tâche est créée
 ```
 
-4. **Montrer** que Copilot :
-   - Utilise ES Modules (pas `require`)
-   - Ajoute du JSDoc
-   - Met les textes en français si applicable
-   - Suit le pattern du projet
+4. **Observer** que Copilot :
+   - ✅ Utilise les classes Orange Boosted (`alert`, `alert-success`)
+   - ✅ Met le texte en français
+   - ✅ Respecte le dark mode
+   - ✅ Pas de classes Tailwind ni Bootstrap "vanilla"
 
-**Fichier à montrer** : `.github/copilot-instructions.md`
+5. **Preuve** : supprimer temporairement le fichier d'instructions, reposer la même question → Copilot ne connaît plus Orange Boosted
+
+**💬 Ce qu'on dit** :
+> "Le fichier `copilot-instructions.md` est lu automatiquement par Copilot.
+> Tous les membres de l'équipe ont le même contexte. Pas besoin de le rappeler
+> à chaque prompt. C'est la mémoire du projet."
 
 ---
 
 ### 5b. Prompt Files réutilisables
 
-**Objectif** : Montrer les prompts pré-définis pour éviter de retaper.
+**Ce que c'est** : Des templates de prompts dans `.github/prompts/` utilisables avec `/`.
 
 **Modus Operandi** :
-1. **Ouvrir** Copilot Chat
-2. **Taper** `/` → la liste des prompts apparaît :
-   - `generate-route` — Créer un endpoint Express
-   - `generate-tests` — Générer des tests
-   - `generate-boosted-component` — Créer un composant UI Orange
-3. **Sélectionner** `generate-route`
-4. **Compléter** avec : `pour gérer des utilisateurs avec email et nom`
 
-**Fichiers à montrer** : `.github/prompts/*.prompt.md`
+1. **Ouvrir** `.github/prompts/generate-route.prompt.md` → montrer le contenu :
 
-**Ce qu'on tape** : `/generate-route pour gérer des utilisateurs avec email et nom`
-**Résultat attendu** : Un fichier route complet avec le bon pattern.
+```markdown
+---
+description: "Generate a new Express route with Orange Boosted conventions"
+---
+# Generate Express Route
+Create a new Express.js route module following project conventions:
+- Use ES Module syntax
+- Include JSDoc documentation
+- Add proper error handling
+- Return JSON with { data: ... } or { error: ... } format
+```
 
-> 📊 **Noter les tokens** (ligne 7) — Moins de tokens en entrée car le prompt est pré-défini
+2. **Ouvrir** Copilot Chat
+3. **Taper** `/` → la liste des prompts custom apparaît :
+   - `generate-route`
+   - `generate-tests`
+   - `generate-boosted-component`
+4. **Sélectionner** `generate-route`
+5. **Compléter** avec :
+
+```
+pour un endpoint /api/users qui gère des utilisateurs avec email, nom et rôle (admin/user)
+```
+
+6. **Montrer** le résultat : un fichier route complet suivant exactement le template
+
+**💬 Ce qu'on dit** :
+> "Les Prompt Files sont des templates réutilisables par toute l'équipe.
+> Tapez `/` pour les voir. Ils standardisent la qualité du code généré
+> ET réduisent les tokens car le contexte est pré-défini."
+
+### 📊 TOKENS — Noter dans le tableau (ligne 7)
 
 ---
 
-### 5c. MCP Playwright Server
+### 5c. MCP Playwright Server — Copilot contrôle un navigateur
 
-**Objectif** : Montrer que Copilot peut contrôler un navigateur.
+**Ce que c'est** : Un serveur MCP (Model Context Protocol) qui donne à Copilot la capacité de piloter un navigateur web réel.
 
-**Pré-requis** : Le serveur tourne (`npm run dev`) + Playwright installé.
+**Pré-requis** : Le serveur de l'app doit tourner (`npm run dev`).
 
 **Modus Operandi** :
-1. **S'assurer** d'être en mode **Agent** dans Copilot Chat
-2. **Vérifier** que le MCP est actif : icône 🔌 dans le chat ou panneau MCP
-3. **Taper** :
+
+1. **Vérifier** que l'app tourne : http://localhost:3000 dans le navigateur
+2. **Ouvrir** Copilot Chat en mode **Agent** (dropdown → Agent)
+3. **Taper exactement** :
 
 ```
-Utilise Playwright pour naviguer vers http://localhost:3000, prendre un screenshot, puis cliquer sur "Nouvelle Tâche", remplir le formulaire avec le titre "Tâche créée par MCP" et la priorité haute, et vérifier qu'elle apparaît dans la liste.
+Utilise le navigateur Playwright pour :
+1. Aller sur http://localhost:3000
+2. Prendre un screenshot de la page d'accueil
+3. Cliquer sur le bouton "Nouvelle Tâche"
+4. Remplir le titre avec "Tâche créée par Copilot MCP"
+5. Sélectionner la priorité "Haute"
+6. Cliquer sur "Créer"
+7. Vérifier que la tâche apparaît dans la liste
+8. Prendre un screenshot final
 ```
 
-4. **Observer** : Copilot ouvre un navigateur, interagit avec la page
-5. **Montrer** le screenshot généré
+4. **Observer** :
+   - Copilot démarre un navigateur Chromium (vous pouvez le voir apparaître)
+   - Il navigue, clique, remplit des champs
+   - Il prend des screenshots (affichés inline dans le chat)
+   - Il vérifie le résultat
 
-**Configuration MCP** (`.vscode/mcp.json`) :
+**✅ Résultat attendu** :
+- 2 screenshots dans le chat (avant/après)
+- La tâche "Tâche créée par Copilot MCP" visible dans l'app
+- Message de confirmation de Copilot
+
+**Si ça ne marche pas** :
+- Vérifier que `npm run dev` tourne (port 3000)
+- `Ctrl+Shift+P` → `MCP: List Servers` → vérifier que Playwright est "Ready"
+- Recharger VS Code si nécessaire
+
+**Configuration** (déjà en place dans `.vscode/mcp.json`) :
 ```json
 {
   "mcp": {
@@ -347,23 +636,39 @@ Utilise Playwright pour naviguer vers http://localhost:3000, prendre un screensh
 }
 ```
 
-**Ce qu'on tape** : Le prompt ci-dessus.
-**Résultat attendu** : Copilot navigue, remplit le form, vérifie le résultat → screenshots.
+**💬 Ce qu'on dit** :
+> "Le MCP Playwright donne des YEUX et des MAINS à Copilot. Il peut naviguer
+> sur votre app, vérifier visuellement le rendu, remplir des formulaires,
+> et même écrire des tests basés sur ce qu'il observe. C'est du test E2E conversationnel."
 
-> 📊 **Noter les tokens** (ligne 8)
+### 📊 TOKENS — Noter dans le tableau (ligne 8)
 
 ---
 
-### 5d. MCP Awesome Copilot
+### 5d. MCP Awesome Copilot — Catalogue communautaire
 
-**Objectif** : Montrer le MCP communautaire pour découvrir/installer des agents.
+**Ce que c'est** : Un MCP server qui connecte Copilot au repo communautaire [github/awesome-copilot](https://github.com/github/awesome-copilot) contenant des centaines d'agents, instructions et prompts.
 
 **Pré-requis** : Docker doit tourner.
 
 **Modus Operandi** :
-1. **S'assurer** que Docker est lancé
-2. Le MCP est configuré dans `.vscode/mcp.json` :
 
+1. **Vérifier** Docker : `docker ps` dans le terminal (pas d'erreur)
+2. **Ouvrir** Copilot Chat en mode **Agent**
+3. **Taper** :
+
+```
+Utilise awesome-copilot pour rechercher des instructions disponibles pour Node.js et Express
+```
+
+4. **Observer** : Copilot interroge le MCP, affiche les résultats disponibles
+5. **Optionnel** — demander à installer :
+
+```
+Installe l'instruction "nodejs" depuis awesome-copilot
+```
+
+**Configuration** (déjà en place dans `.vscode/mcp.json`) :
 ```json
 "awesome-copilot": {
   "type": "stdio",
@@ -372,210 +677,334 @@ Utilise Playwright pour naviguer vers http://localhost:3000, prendre un screensh
 }
 ```
 
-3. **En mode Agent**, taper :
+**Alternative sans Docker** : Montrer le site https://awesome-copilot.github.com avec la recherche et les badges "Install in VS Code" en 1 clic.
 
-```
-Utilise awesome-copilot pour chercher des instructions pour Node.js et Express
-```
-
-4. **Montrer** : les résultats et la possibilité d'installer directement
-
-**Alternative sans Docker** — Aller sur https://awesome-copilot.github.com et montrer le catalogue.
+**💬 Ce qu'on dit** :
+> "Awesome Copilot est un catalogue communautaire officiel GitHub avec 200+ agents,
+> instructions et prompts. Vous pouvez les installer en un clic ou via le MCP server
+> directement depuis Copilot Chat. Le Caveman Mode qu'on va voir vient de là."
 
 ---
 
 ## 🎬 DÉMO 6 — Optimisation des Tokens (Caveman Mode)
 
-### 6a. Démo comparative — Avec vs Sans Caveman
+### 🎯 Objectif
+Prouver concrètement qu'on peut réduire de 50-70% la consommation de tokens sans perdre en qualité.
 
-**Objectif** : Prouver visuellement la réduction de tokens.
-
-**Modus Operandi** :
-
-**Étape 1 — Mode normal (déjà fait à l'étape 4a)** :
-- On a déjà demandé "Explique getTasks()" → tokens notés dans le tableau (ligne 4)
-
-**Étape 2 — Activer Caveman Mode** :
-```bash
-mv .github/instructions/caveman-mode.instructions.md.disabled .github/instructions/caveman-mode.instructions.md
-```
-
-**Étape 3 — Même question** :
-1. **Ouvrir** Copilot Chat (nouvelle conversation pour reset le contexte)
-2. **Sélectionner** l'agent **"Caveman Mode"** dans le dropdown (ou simplement garder l'instruction qui s'applique globalement)
-3. **Taper exactement la même chose** :
-
-```
-Explique-moi comment fonctionne le filtrage dans la fonction getTasks() et quels sont les risques de performance
-```
-
-4. **Comparer** :
-   - Réponse normale : paragraphes, détails, suggestions → beaucoup de tokens out
-   - Réponse caveman : bullets, 3-6 mots par phrase, direct → **50-70% moins de tokens out**
-
-> 📊 **Noter les tokens** (ligne 9) et **comparer avec ligne 4**
-
-**Ce qu'on montre à l'audience** :
-- Le nombre de tokens OUT a drastiquement baissé
-- La qualité de l'information est préservée
-- Le code généré reste identique (seul le chat est terse)
+### ⏱️ Durée estimée : 8 minutes (3 sous-démos)
 
 ---
 
-### 6b. L'impact du `.copilotignore`
+### 6a. Caveman Mode — Réponses ultra-concises
 
-**Objectif** : Montrer que le contexte envoyé impacte les tokens IN.
+**Ce que c'est** : Un agent + instruction issus de [github/awesome-copilot](https://github.com/github/awesome-copilot/blob/main/agents/caveman-mode.agent.md) qui force Copilot à répondre en mode "homme des cavernes" — minimal, direct, sans fioritures.
+
+**Principes du Caveman Mode** :
+- Phrases de 3-6 mots : "Me fix code" pas "I will fix the code for you"
+- 1 phrase max par idée
+- Pas de fillers : "Great question!", "Here's what I found", "Let me explain..."
+- Pas d'émojis, pas de politesses
+- Le **code** reste normal et propre (seul le chat est terse)
+- Cible : **50-70% moins de tokens en sortie**
 
 **Modus Operandi** :
 
-**Étape 1 — Supprimer temporairement** :
+**Étape 1 — Activer le Caveman Mode** :
+
+Renommer le fichier pour l'activer :
+```bash
+# Dans le terminal VS Code
+mv .github/instructions/caveman-mode.instructions.md.disabled .github/instructions/caveman-mode.instructions.md
+```
+
+> **Note** : Ce fichier est livré désactivé (`.disabled`) par défaut pour ne pas affecter les démos 1-5.
+
+**Étape 2 — Ouvrir une NOUVELLE conversation** (important pour reset le contexte) :
+- Cliquer sur `+` dans Copilot Chat (nouvelle conversation)
+
+**Étape 3 — Poser la MÊME question que l'étape 4a** :
+
+```
+Explique-moi comment fonctionne le filtrage dans la fonction getTasks() du fichier src/services/taskService.js et quels sont les risques de performance si on a 10000 tâches
+```
+
+**Étape 4 — Comparer les réponses** :
+
+| | Mode Normal (étape 4a) | Caveman Mode (maintenant) |
+|--|--|--|
+| **Style** | Paragraphes, détails, alternatives | Bullets, 3-6 mots par point |
+| **Longueur** | 200-400 mots | 50-100 mots |
+| **Tokens OUT** | ≈ 300-500 | ≈ 100-200 |
+| **Info utile** | ✅ Complète | ✅ Même info, condensée |
+
+**Étape 5 — Montrer que le CODE reste propre** :
+
+Demander dans la même conversation :
+```
+Refactore getTasks pour fusionner les filtres en une seule passe
+```
+
+→ Le code généré est propre, lisible, bien formaté (seule la RÉPONSE chat est terse).
+
+**✅ Résultat attendu** :
+
+Réponse Caveman typique :
+```
+- getTasks spreads array, chains two .filter() + sort
+- 10k tasks: 3 passes O(n) each → O(3n + n log n)
+- Fix: single pass, combined predicate
+- No index → linear scan always
+```
+
+VS réponse normale :
+```
+La fonction getTasks() dans taskService.js commence par créer une copie du tableau
+avec l'opérateur spread [...tasks]. Ensuite, elle applique successivement deux filtres
+avec .filter() si les paramètres status et/ou priority sont définis. Enfin, elle trie
+le résultat par date de création décroissante avec .sort().
+
+Pour 10 000 tâches, cela pose plusieurs problèmes de performance :
+1. La copie initiale crée un nouveau tableau de 10 000 éléments...
+2. Chaque .filter() parcourt l'intégralité du tableau...
+[etc., 300+ mots]
+```
+
+**💬 Ce qu'on dit** :
+> "Même question, même qualité d'information. Mais le Caveman Mode utilise
+> 50 à 70% MOINS de tokens en sortie. Le code reste impeccable.
+> C'est purement le 'bavardage' qui est supprimé."
+
+### 📊 TOKENS — Noter dans le tableau (ligne 9) — COMPARER avec ligne 4
+
+---
+
+### 6b. Impact du `.copilotignore`
+
+**Ce que c'est** : Un fichier qui exclut certains fichiers/dossiers du contexte envoyé à Copilot → moins de tokens IN.
+
+**Modus Operandi** :
+
+**Étape 1 — Montrer le fichier actuel** :
+
+Ouvrir `.copilotignore` :
+```gitignore
+# Fichiers exclus du contexte Copilot
+node_modules/
+dist/
+coverage/
+*.lock
+*.log
+.git/
+```
+
+**Étape 2 — Supprimer temporairement** :
 ```bash
 mv .copilotignore .copilotignore.backup
 ```
 
-**Étape 2 — Poser une question** :
+**Étape 3 — Nouvelle conversation + même question** :
 ```
-Explique-moi comment fonctionne le filtrage dans la fonction getTasks()
+Explique-moi comment fonctionne le filtrage dans la fonction getTasks() du fichier src/services/taskService.js et quels sont les risques de performance si on a 10000 tâches
 ```
 
-> 📊 **Noter les tokens** (ligne 10)
+### 📊 TOKENS — Noter les tokens IN (ligne 10)
 
-**Étape 3 — Remettre le fichier** :
+**Étape 4 — Remettre le fichier** :
 ```bash
 mv .copilotignore.backup .copilotignore
 ```
 
-**Étape 4 — Montrer la différence** :
-- Sans `.copilotignore` : Copilot indexe plus de fichiers → tokens IN plus élevés
-- Avec : seuls les fichiers pertinents sont dans le contexte
+**Étape 5 — Montrer la différence** :
+- **Sans `.copilotignore`** : Copilot scanne `node_modules/`, `package-lock.json` etc. → tokens IN élevés
+- **Avec** : seuls les fichiers pertinents du projet → tokens IN réduits
+
+**💬 Ce qu'on dit** :
+> "Le .copilotignore fonctionne comme le .gitignore mais pour l'IA.
+> Il empêche Copilot d'envoyer des fichiers inutiles (node_modules, lock files)
+> en contexte. Résultat : 30 à 50% de tokens en entrée en moins."
 
 ---
 
-### 6c. Technique `#file:` pour cibler le contexte
+### 6c. Technique `#file:` — Cibler le contexte
+
+**Ce que c'est** : En préfixant un prompt avec `#file:chemin`, on force Copilot à n'utiliser QUE ce fichier comme contexte.
 
 **Modus Operandi** :
 
-**Sans ciblage** :
+**Sans ciblage** (Copilot scanne tout le projet) :
 ```
 Comment fonctionne la création de tâches ?
 ```
-→ Copilot scanne tout le projet pour trouver le contexte pertinent
 
-**Avec ciblage** :
+**Avec ciblage** (Copilot utilise uniquement le fichier spécifié) :
 ```
 #file:src/services/taskService.js Comment fonctionne la création de tâches ?
 ```
-→ Copilot utilise uniquement ce fichier → beaucoup moins de tokens IN
+
+**Démontrer** :
+1. Poser la question SANS `#file:` → noter les tokens IN
+2. Poser la question AVEC `#file:` → noter les tokens IN
+3. Montrer la différence : **60-80% de tokens IN en moins**
+
+**💬 Ce qu'on dit** :
+> "Le hashtag #file force Copilot à se concentrer sur UN fichier.
+> C'est la technique la plus efficace pour réduire les tokens en entrée
+> quand on sait exactement quel fichier est pertinent."
 
 ---
 
-### 6d. Tableau récapitulatif des techniques d'optimisation
+### 6d. Récapitulatif — Tableau des techniques d'optimisation
 
-| Technique | Impact Tokens IN | Impact Tokens OUT | Comment activer |
+**Afficher ce tableau à l'audience** :
+
+| Technique | Réduit Tokens IN | Réduit Tokens OUT | Comment l'activer |
 |-----------|:---:|:---:|---------|
-| `.copilotignore` | **-30 à -50%** | — | Créer le fichier à la racine |
+| `.copilotignore` | **-30 à -50%** | — | Fichier à la racine du projet |
 | `#file:` ciblé | **-60 à -80%** | — | Préfixer le prompt avec `#file:chemin` |
-| Prompt Files | **-20 à -30%** | — | Mettre dans `.github/prompts/` |
-| Caveman Mode (agent) | — | **-50 à -70%** | Sélectionner l'agent "Caveman Mode" |
-| Caveman Mode (instruction) | — | **-50 à -70%** | Fichier dans `.github/instructions/` |
-| Fonctions courtes (<30 lignes) | **-15 à -25%** | — | Bonne pratique de code |
-| JSDoc précis | — | **+qualité** = moins de re-prompts | Documenter les fonctions |
-| Modèle léger (`gpt-4o-mini`) | **-50% coût** | — | Configurer dans prompt file `model:` |
+| Prompt Files | **-20 à -30%** | — | `.github/prompts/*.prompt.md` |
+| Caveman Mode (agent) | — | **-50 à -70%** | Sélectionner agent "Caveman Mode" |
+| Caveman Mode (instruction) | — | **-50 à -70%** | `.github/instructions/caveman-mode.instructions.md` |
+| Fonctions courtes (<30 lignes) | **-15 à -25%** | — | Bonne pratique = fichiers plus petits |
+| JSDoc précis | — | **Moins de re-prompts** | Documenter → Copilot comprend mieux du 1er coup |
+| Modèle léger | **-50% coût** | — | `model: 'gpt-4o-mini'` dans prompt file |
+
+**💬 Ce qu'on dit** :
+> "En combinant ces techniques, on peut réduire la consommation de tokens
+> de manière significative. Le Caveman Mode seul fait -50-70% en sortie.
+> Avec `.copilotignore` + `#file:`, on réduit aussi l'entrée de 60-80%.
+> Au total : une interaction qui coûtait 800 tokens peut descendre à 200."
 
 ---
 
-## 📁 Structure complète du projet
+## 📁 Structure du projet
 
 ```
 copilot-demo-orange/
 ├── .github/
-│   ├── copilot-instructions.md          # Instructions globales projet
+│   ├── copilot-instructions.md              # 📄 Instructions globales projet
 │   ├── agents/
-│   │   └── caveman-mode.agent.md        # 🦴 Agent Caveman (awesome-copilot)
+│   │   └── caveman-mode.agent.md            # 🦴 Agent Caveman (github/awesome-copilot)
 │   ├── instructions/
-│   │   └── caveman-mode.instructions.md # 🦴 Instruction globale terse
+│   │   └── caveman-mode.instructions.md.disabled  # 🦴 Instruction terse (activer pour démo 6)
 │   └── prompts/
-│       ├── generate-route.prompt.md     # Prompt: nouveau endpoint
-│       ├── generate-tests.prompt.md     # Prompt: tests unitaires
-│       └── generate-boosted-component.prompt.md  # Prompt: composant UI
+│       ├── generate-route.prompt.md         # 📝 Template: nouveau endpoint
+│       ├── generate-tests.prompt.md         # 📝 Template: tests unitaires
+│       └── generate-boosted-component.prompt.md  # 📝 Template: composant UI
 ├── .vscode/
-│   ├── mcp.json                         # MCP: Playwright + Awesome Copilot
-│   └── extensions.json                  # Extensions recommandées
-├── .copilotignore                       # Exclure fichiers du contexte
+│   ├── mcp.json                             # 🔌 Serveurs MCP: Playwright + Awesome Copilot
+│   └── extensions.json                      # 📦 Extensions recommandées
+├── .copilotignore                           # 🚫 Exclure fichiers du contexte IA
+├── .gitignore
 ├── src/
-│   ├── app.js                           # Express (port 3000)
+│   ├── app.js                               # 🚀 Express app (port 3000)
 │   ├── routes/
-│   │   ├── tasks.js                     # CRUD API /api/tasks
-│   │   └── analytics.js                 # GET /api/analytics/stats
+│   │   ├── tasks.js                         # 🔀 API REST /api/tasks (CRUD)
+│   │   └── analytics.js                     # 📊 API /api/analytics/stats
 │   ├── services/
-│   │   └── taskService.js               # Logique métier
+│   │   └── taskService.js                   # 💼 Logique métier (in-memory store)
 │   └── utils/
-│       └── validators.js                # Email, sanitize, pagination
+│       └── validators.js                    # ✅ Validation, sanitisation, pagination
 ├── public/
-│   ├── index.html                       # UI Orange Boosted dark mode
-│   ├── css/app.css                      # Styles custom
-│   └── js/app.js                        # Frontend vanilla JS
+│   ├── index.html                           # 🎨 UI Orange Boosted (dark mode, CDN)
+│   ├── css/app.css                          # 🎨 Styles custom (minimal)
+│   └── js/app.js                            # ⚡ Frontend vanilla JS (fetch API)
 ├── tests/
-│   ├── taskService.test.js              # 18 tests unitaires
-│   ├── validators.test.js               # 11 tests unitaires
+│   ├── taskService.test.js                  # 🧪 18 tests (service CRUD)
+│   ├── validators.test.js                   # 🧪 11 tests (validateurs)
 │   └── e2e/
-│       └── taskManager.spec.js          # 7 tests Playwright
-├── playwright.config.js
-├── jest.config.js
-└── package.json
+│       └── taskManager.spec.js              # 🎭 7 tests Playwright E2E
+├── playwright.config.js                     # ⚙️ Config Playwright
+├── jest.config.js                           # ⚙️ Config Jest (exclut e2e/)
+├── package.json
+└── package-lock.json                        # 🔒 Versions exactes (reproductibilité)
 ```
 
 ---
 
-## 🧪 Commandes
+## ✅ Checklist Jour-J
 
-```bash
-npm run dev        # Serveur hot-reload → http://localhost:3000
-npm test           # 29 tests unitaires Jest
-npm run test:e2e   # Tests E2E Playwright (serveur doit tourner)
-npm run lint       # ESLint
+### AVANT la démo (10 min)
+
+```
+[ ] Node.js 20+ installé                    → node --version
+[ ] VS Code avec extensions Copilot         → code --list-extensions | grep copilot
+[ ] Licence Copilot active                   → github.com/settings/copilot
+[ ] npm install fait (pas d'erreur)          → ls node_modules/.package-lock.json
+[ ] npm test passe (29 tests)                → npm test
+[ ] npm run dev lancé                        → http://localhost:3000 visible
+[ ] Docker lancé (si MCP awesome-copilot)    → docker ps
+[ ] Playwright installé                      → npx playwright --version
+[ ] Settings token count activés             → settings.json vérifié
+[ ] caveman instructions = .disabled         → ls .github/instructions/
+[ ] Tableau de suivi tokens prêt             → imprimé ou onglet ouvert
+[ ] Output Panel ouvert sur "GitHub Copilot Chat"
+```
+
+### PENDANT la démo (30 min)
+
+```
+[ ] Démo 1 — Génération code        (3 min)  → categoryService.js créé
+[ ] Démo 2 — Génération tests       (3 min)  → /tests + prompt file
+[ ] Démo 3 — Génération docs        (2 min)  → /doc + /** inline
+[ ] Démo 4 — Modes Ask/Edit/Agent   (8 min)  → 3 modes montrés
+[ ] Démo 5 — Personnalisation       (10 min) → instructions, prompts, MCP
+[ ] Démo 6 — Optimisation tokens    (8 min)  → caveman activé, comparaison faite
+[ ] À CHAQUE ÉTAPE : noter tokens IN + OUT dans le tableau
+```
+
+### APRÈS la démo (2 min)
+
+```
+[ ] Montrer le tableau de tokens rempli → conclusion chiffrée
+[ ] Remettre caveman-mode.instructions.md en .disabled
+[ ] Remettre .copilotignore si supprimé
+[ ] git checkout . pour remettre le code d'origine (si Agent a modifié des fichiers)
 ```
 
 ---
 
 ## 🔗 Ressources
 
-| Ressource | Lien |
-|-----------|------|
-| Awesome Copilot (repo) | https://github.com/github/awesome-copilot |
-| Awesome Copilot (site) | https://awesome-copilot.github.com |
-| Caveman Mode - Agent | https://github.com/github/awesome-copilot/blob/main/agents/caveman-mode.agent.md |
-| Caveman Mode - Instructions | https://github.com/github/awesome-copilot/blob/main/instructions/caveman-mode.instructions.md |
-| Orange Boosted 5.3 | https://boosted.orange.com/ |
-| Copilot Docs | https://docs.github.com/copilot |
-| Playwright MCP | https://www.npmjs.com/package/@playwright/mcp |
-| Custom Instructions | https://docs.github.com/copilot/customizing-copilot |
+| Ressource | URL |
+|-----------|-----|
+| **Awesome Copilot** (repo GitHub) | https://github.com/github/awesome-copilot |
+| **Awesome Copilot** (site web) | https://awesome-copilot.github.com |
+| **Caveman Mode** (agent) | https://github.com/github/awesome-copilot/blob/main/agents/caveman-mode.agent.md |
+| **Caveman Mode** (instructions) | https://github.com/github/awesome-copilot/blob/main/instructions/caveman-mode.instructions.md |
+| **Orange Boosted 5.3** | https://boosted.orange.com/ |
+| **Copilot Documentation** | https://docs.github.com/copilot |
+| **Copilot Custom Instructions** | https://docs.github.com/copilot/customizing-copilot/adding-repository-custom-instructions |
+| **Playwright MCP** | https://www.npmjs.com/package/@playwright/mcp |
+| **MCP Protocol** | https://modelcontextprotocol.io |
 
 ---
 
-## ✅ Checklist Jour-J
+## ❓ FAQ / Troubleshooting
 
-```
-AVANT LA DÉMO :
-[ ] VS Code ouvert avec extensions Copilot + Playwright installées
-[ ] npm install fait
-[ ] npm run dev lancé → http://localhost:3000 accessible
-[ ] Docker lancé (si démo awesome-copilot MCP)
-[ ] npx playwright install chromium fait
-[ ] caveman-mode.instructions.md renommé en .disabled
-[ ] Settings tokens activés (showTokenCount)
-[ ] Tableau de suivi tokens imprimé ou ouvert
-[ ] Nouvelle fenêtre Copilot Chat ouverte (contexte propre)
+### "Copilot ne propose rien quand je tape"
+- Vérifier que l'extension est activée (icône Copilot en bas à droite de VS Code)
+- Vérifier la licence : https://github.com/settings/copilot
+- Recharger VS Code : `Ctrl+Shift+P` → `Developer: Reload Window`
 
-PENDANT LA DÉMO :
-[ ] À chaque étape, noter tokens IN + OUT dans le tableau
-[ ] Démo 1-3 : Génération (code, tests, docs)
-[ ] Démo 4 : Modes (Ask, Edit, Agent)
-[ ] Démo 5 : Personnalisation (instructions, prompts, MCP)
-[ ] Démo 6 : Optimisation (caveman, .copilotignore, #file)
+### "Le MCP Playwright ne démarre pas"
+- Vérifier que `@playwright/mcp` est accessible : `npx @playwright/mcp@latest --help`
+- Vérifier `.vscode/mcp.json` existe et est valide
+- `Ctrl+Shift+P` → `MCP: List Servers` → vérifier le status
 
-APRÈS LA DÉMO :
-[ ] Remettre caveman-mode.instructions.md (enlever .disabled)
-[ ] Remettre .copilotignore si supprimé
-[ ] Montrer le tableau de tokens → conclusion sur l'optimisation
-```
+### "Le MCP awesome-copilot échoue"
+- Docker doit tourner : `docker ps`
+- Première utilisation = téléchargement de l'image (~200MB) : `docker pull ghcr.io/microsoft/mcp-dotnet-samples/awesome-copilot:latest`
+
+### "Les tests E2E échouent"
+- Le serveur doit tourner : `npm run dev` dans un autre terminal
+- Playwright installé : `npx playwright install chromium`
+
+### "Le Caveman Mode ne s'applique pas"
+- Vérifier que le fichier est bien nommé `.instructions.md` (pas `.disabled`)
+- Ouvrir une NOUVELLE conversation (le contexte est caché dans la conversation courante)
+- Recharger VS Code après avoir renommé le fichier
+
+### "Je ne vois pas les tokens"
+- Setting à ajouter : `"github.copilot.advanced.debug.showTokenCount": true`
+- Output Panel : `Ctrl+Shift+U` → sélectionner `GitHub Copilot Chat` dans le dropdown
+- Les tokens ne sont pas toujours visibles selon la version de l'extension
