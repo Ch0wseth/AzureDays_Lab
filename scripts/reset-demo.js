@@ -22,12 +22,12 @@ if (existsSync(cavemanActive)) {
   actions.push('✅ Caveman mode désactivé (.disabled)');
 }
 
-// 2. Restore copilot-instructions.md if renamed
-const instructionsFile = join(ROOT, '.github', 'copilot-instructions.md');
-const instructionsBak = join(ROOT, '.github', 'copilot-instructions.md.bak');
-if (!existsSync(instructionsFile) && existsSync(instructionsBak)) {
-  renameSync(instructionsBak, instructionsFile);
-  actions.push('✅ copilot-instructions.md restauré');
+// 2. Restore .github/ tracked files (AGENTS.md, agents, skills, instructions)
+try {
+  execSync('git checkout -- .github/ AGENTS.md', { cwd: ROOT, stdio: 'pipe' });
+  actions.push('✅ Fichiers Copilot CLI restaurés (git checkout .github/ AGENTS.md)');
+} catch {
+  actions.push('⚠️ git checkout .github/ échoué (pas grave si aucune modification)');
 }
 
 // 3. Remove temporary files

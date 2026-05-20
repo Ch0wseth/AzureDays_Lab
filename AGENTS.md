@@ -1,7 +1,9 @@
-# Copilot Instructions - Orange Copilot Demo
+# AGENTS.md — Orange Copilot Demo
+
+This file is the primary instructions source read automatically by the **GitHub Copilot CLI** (`copilot`) at the start of every session in this repository.
 
 ## Project Context
-This is a JavaScript demo application using **Orange Boosted 5.3** (Bootstrap-based design system) to showcase GitHub Copilot capabilities in VS Code.
+JavaScript demo application using **Orange Boosted 5.3** (Bootstrap-based design system) to showcase GitHub Copilot CLI capabilities in the terminal.
 
 ## Code Style
 - Use ES Modules (`import/export`)
@@ -30,6 +32,6 @@ This is a JavaScript demo application using **Orange Boosted 5.3** (Bootstrap-ba
 ## Token Optimization Tips
 - Keep functions small and focused (< 30 lines)
 - Use descriptive file names to help Copilot context
-- Leverage `#file` references in prompts
-- Use `.copilotignore` to exclude noise
-- Use "Caveman Mode" agent for minimal token responses (see `.github/agents/`)
+- Attach files explicitly with `@path/to/file` in CLI prompts
+- Use the `Caveman Mode` agent for minimal token responses (see `.github/agents/caveman-mode.agent.md`)
+- Run `/usage` and `/context` in the CLI to monitor consumption

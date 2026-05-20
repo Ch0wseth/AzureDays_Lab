@@ -1,5 +1,7 @@
 ---
-description: "Generate an Orange Boosted UI component"
+name: generate-boosted-component
+description: "Generate an HTML component following Orange Boosted 5.3 design system (dark mode, WCAG AA, French text)."
+user-invocable: true
 ---
 
 # Generate Orange Boosted Component

@@ -1,10 +1,12 @@
 ---
-description: "Generate a new Express route with Orange Boosted conventions"
+name: generate-route
+description: "Generate a new Express route module with Orange Boosted project conventions (ES Modules, JSDoc, try/catch, { data }/{ error } responses)."
+user-invocable: true
 ---
 
 # Generate Express Route
 
-Create a new Express.js route module following project conventions:
+Create a new Express.js route module following project conventions.
 
 ## Requirements
 - Use ES Module syntax (`import/export`)

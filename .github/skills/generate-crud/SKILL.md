@@ -1,6 +1,9 @@
 ---
-description: "Générer un CRUD complet (service + route + tests)"
+name: generate-crud
+description: "Generate a full CRUD module: service + route + tests, all consistent with project conventions."
+user-invocable: true
 ---
+
 # Skill : Génération CRUD Complète
 
 Génère les 3 fichiers pour un nouveau module CRUD :

@@ -1,6 +1,9 @@
 ---
-description: "Créer un nouveau service CRUD avec in-memory store"
+name: generate-service
+description: "Create a new in-memory CRUD service in src/services/ following taskService.js conventions."
+user-invocable: true
 ---
+
 # Génération de Service
 
 Crée un nouveau service dans `src/services/` avec :
