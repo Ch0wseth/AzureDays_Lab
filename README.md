@@ -979,127 +979,368 @@ Observer : Copilot crée automatiquement le fichier dans `.github/instructions/`
 
 ### 5g. Sub-Agents — Orchestrer plusieurs agents ensemble
 
-**Ce que c'est** : En mode Agent, Copilot peut invoquer d'autres participants/agents spécialisés avec `@nom`. Les custom agents peuvent aussi se référencer entre eux pour des workflows multi-étapes.
+---
 
-#### Les participants intégrés (built-in)
+#### 🧩 Concept : Comment fonctionnent les agents et sub-agents dans VS Code
 
-| Participant | Ce qu'il fait | Quand l'utiliser |
-|------------|--------------|-----------------|
-| `@workspace` | Cherche dans tout le projet (indexation sémantique) | Questions sur l'architecture globale |
-| `@terminal` | Exécute des commandes dans le terminal | Lancer tests, builds, scripts |
-| `@vscode` | Contrôle l'éditeur (settings, extensions, thèmes) | Configuration VS Code |
-
-#### 🔬 Manipulation — Utiliser les participants intégrés
-
-**Étape 1** — Ouvrir Copilot Chat. Taper `@` pour voir la liste des participants disponibles :
-- `@workspace`
-- `@terminal`
-- `@vscode`
-- Vos custom agents (`@code-reviewer`, `@caveman-mode`)
-
-**Étape 2** — Tester `@workspace` (recherche dans tout le projet) :
 ```
-@workspace Où est définie la logique de validation des tâches ?
-```
-Observer : Copilot cherche dans TOUT le projet et trouve les fichiers pertinents (même fermés).
-
-**Étape 3** — Tester `@terminal` (exécution de commandes) :
-```
-@terminal Lance les tests unitaires et dis-moi combien passent
-```
-Observer : Copilot exécute `npm test` et interprète le résultat.
-
-**Étape 4** — Tester `@vscode` (contrôle de l'éditeur) :
-```
-@vscode Active le thème sombre et augmente la taille de police à 16
-```
-Observer : Copilot modifie les settings VS Code en direct.
-
-#### 🔬 Manipulation — Invoquer un custom agent comme sub-agent
-
-**Étape 1** — En mode Agent (pas Ask), taper :
-```
-@code-reviewer Analyse les fichiers modifiés dans le dernier commit
-```
-Observer : l'agent code-reviewer est invoqué avec son persona (format 🔴🟡🟢).
-
-**Étape 2** — Combiner un participant et un agent dans la même conversation :
-```
-@workspace Trouve tous les endpoints API qui n'ont pas de validation d'entrée
-```
-Puis dans le même chat :
-```
-@code-reviewer Pour chaque endpoint trouvé, propose un fix
+┌─────────────────────────────────────────────────────────────────┐
+│                    COPILOT CHAT (VS Code)                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  Mode "Ask"    → Copilot seul, pas d'outils, pas de sub-agents  │
+│  Mode "Edit"   → Copilot + édition fichiers, pas de sub-agents  │
+│  Mode "Agent"  → Copilot + TOUS les outils + sub-agents         │
+│                                                                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  En mode Agent, Copilot a accès à :                              │
+│                                                                   │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │ @workspace   │  │ @terminal    │  │ @vscode              │   │
+│  │ Recherche    │  │ Exécute cmds │  │ Contrôle l'éditeur   │   │
+│  │ sémantique   │  │ npm test     │  │ settings, thèmes     │   │
+│  │ dans TOUT    │  │ npm run dev  │  │ extensions           │   │
+│  │ le projet    │  │ git status   │  │                      │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
+│                                                                   │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │ MCP Tools    │  │ Custom       │  │ Built-in Tools       │   │
+│  │ (Playwright) │  │ Agents       │  │ (editFiles, changes  │   │
+│  │ navigate     │  │ @code-review │  │  codebase, fetch)    │   │
+│  │ click, fill  │  │ @full-review │  │                      │   │
+│  │ screenshot   │  │ @caveman     │  │                      │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
+│                                                                   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-#### 🔬 Manipulation — Créer un agent qui orchestre d'autres outils
+**Principe clé** : En mode Agent, Copilot est un **orchestrateur**. Il décide quels outils/sub-agents appeler, dans quel ordre, et combine leurs résultats. Vous ne faites qu'un seul prompt — Copilot gère le reste.
 
-**Étape 1** — Créer `.github/agents/full-review.agent.md` :
+---
+
+#### 📍 Où ça se passe dans VS Code
+
+**Le dropdown de mode** (en haut de Copilot Chat) :
 ```
-Ctrl+Shift+P → File: New File → .github/agents/full-review.agent.md
+┌─────────────────────────────────────┐
+│  [Ask ▾]  [Edit ▾]  [Agent ▾]      │  ← Cliquer ici pour changer
+│                                      │
+│  Quand "Agent" est sélectionné :     │
+│  - Copilot peut EXÉCUTER des actions │
+│  - Les MCP tools sont disponibles    │
+│  - Les @participants fonctionnent    │
+│  - Les custom agents apparaissent    │
+└─────────────────────────────────────┘
 ```
 
-**Étape 2** — Écrire un agent orchestrateur :
-```markdown
+**Le sélecteur d'agent** (à côté du dropdown de mode) :
+```
+┌─────────────────────────────────────┐
+│  Agent: [Copilot ▾]                  │  ← Cliquer pour changer d'agent
+│                                      │
+│  Options :                           │
+│  • Copilot (défaut)                  │
+│  • code-reviewer                     │  ← vos .agent.md
+│  • full-review                       │
+│  • caveman-mode                      │
+└─────────────────────────────────────┘
+```
+
+**Les @mentions dans le chat** :
+```
+┌─────────────────────────────────────┐
+│  Taper "@" dans le champ de saisie  │
+│                                      │
+│  Liste qui apparaît :                │
+│  @workspace   — recherche projet     │
+│  @terminal    — exécute commandes    │
+│  @vscode      — contrôle éditeur     │
+│  @code-reviewer — votre agent        │
+│  @full-review   — votre agent        │
+└─────────────────────────────────────┘
+```
+
+---
+
+#### 🔑 Différence entre sélectionner un agent et @mentionner
+
+| Action | Comment | Ce qui se passe |
+|--------|---------|-----------------|
+| **Sélectionner** un agent dans le dropdown | Cliquer le sélecteur d'agent | TOUTE la conversation utilise ce persona. Chaque réponse suit ses instructions. |
+| **@mentionner** un participant | Taper `@workspace` dans le prompt | UN SEUL tour utilise ce participant. Le tour suivant revient au mode normal. |
+
+**Exemple concret** :
+- Sélectionner `code-reviewer` → tout ce que vous tapez est analysé sous l'angle sécurité/perf
+- Taper `@workspace où est la validation ?` → Copilot cherche dans le projet, puis revient en mode normal
+
+---
+
+#### Les participants intégrés (built-in) — Détail
+
+##### `@workspace` — Recherche sémantique dans tout le projet
+
+**Ce qu'il fait** :
+- Indexe TOUS les fichiers du workspace (sauf `.copilotignore`)
+- Comprend le code (pas juste du texte) : il sait ce qu'est une fonction, une classe, un import
+- Trouve les fichiers pertinents même s'ils sont fermés
+
+**Quand l'utiliser** :
+- "Où est défini X ?"
+- "Quels fichiers utilisent la fonction Y ?"
+- "Explique l'architecture du projet"
+- "Trouve tous les TODO dans le code"
+
+**Ce qu'il ne fait PAS** :
+- Il ne modifie pas les fichiers
+- Il n'exécute pas de commandes
+- Il ne navigue pas sur le web
+
+##### `@terminal` — Exécution de commandes
+
+**Ce qu'il fait** :
+- Exécute des commandes dans le terminal intégré VS Code
+- Lit la sortie et l'interprète
+- Peut enchaîner plusieurs commandes
+
+**Quand l'utiliser** :
+- "Lance les tests et dis-moi si ça passe"
+- "Installe ce package"
+- "Montre le git log des 5 derniers commits"
+- "Vérifie que le serveur tourne"
+
+##### `@vscode` — Contrôle de l'éditeur
+
+**Ce qu'il fait** :
+- Modifie les settings (`settings.json`)
+- Installe/désinstalle des extensions
+- Change le thème, la police, le layout
+- Ouvre des fichiers, crée des snippets
+
+**Quand l'utiliser** :
+- "Configure l'éditeur pour ce projet"
+- "Installe l'extension ESLint"
+- "Change le thème en One Dark Pro"
+
+---
+
+#### 🔬 Manipulation 1 — Voir les sub-agents en action (pas à pas)
+
+**Pré-requis** : Être en mode **Agent** (pas Ask ni Edit).
+
+**Étape 1** — Ouvrir Copilot Chat : `Ctrl+Alt+I`
+
+**Étape 2** — Vérifier le mode : cliquer sur le dropdown en haut → sélectionner **"Agent"**
+
+**Étape 3** — Taper `@` dans le champ de saisie. Observer la liste qui apparaît :
+```
+@workspace
+@terminal  
+@vscode
+@code-reviewer   (si vous avez créé l'agent en 5c)
+@full-review     (si vous avez créé l'agent plus haut)
+@caveman-mode    (déjà dans le repo)
+```
+
+**Étape 4** — Tester `@workspace`. Taper exactement :
+```
+@workspace Quels fichiers contiennent de la logique de validation ? Liste-les avec une description de ce qu'ils valident.
+```
+
+**Étape 5** — Observer dans le chat :
+- Copilot affiche un indicateur "Searching workspace..." 
+- Il trouve `src/utils/validators.js`, `src/services/taskService.js`
+- Il résume ce que chaque fichier valide
+- **Important** : il a trouvé ça SANS que ces fichiers soient ouverts
+
+**Étape 6** — Tester `@terminal`. Taper :
+```
+@terminal Lance npm test et résume les résultats. Combien de tests passent ? Y en a-t-il qui échouent ?
+```
+
+**Étape 7** — Observer dans le chat :
+- Copilot ouvre un terminal (ou utilise celui existant)
+- Il exécute `npm test`
+- Il attend la fin
+- Il résume : "29 tests passent, 0 échecs, 2 suites de tests"
+- **Important** : vous pouvez voir la commande s'exécuter dans le terminal VS Code
+
+**Étape 8** — Tester `@vscode`. Taper :
+```
+@vscode Montre-moi les settings actuels liés à Copilot dans ce workspace
+```
+
+**Étape 9** — Observer : Copilot liste vos settings Copilot (debug tokens, etc.)
+
+---
+
+#### 🔬 Manipulation 2 — Combiner plusieurs @participants dans une conversation
+
+**Scénario** : Vous voulez comprendre un bug puis le corriger.
+
+**Étape 1** — Trouver le problème avec `@workspace` :
+```
+@workspace Est-ce que la fonction deleteTask() gère le cas où l'ID n'existe pas ? Si oui, dans quel fichier ?
+```
+Copilot cherche et répond (ex: "Dans taskService.js, ligne 45, elle retourne null si non trouvé").
+
+**Étape 2** — Dans la MÊME conversation, vérifier avec `@terminal` :
+```
+@terminal Lance les tests qui concernent deleteTask pour vérifier si ce cas edge est testé
+```
+Copilot exécute un test filtré et rapporte le résultat.
+
+**Étape 3** — Toujours dans la MÊME conversation, demander un fix :
+```
+Ajoute un test pour le cas où deleteTask est appelé avec un ID inexistant, puis lance les tests pour vérifier que ça passe.
+```
+Copilot (en mode Agent) :
+1. Crée le test dans le fichier approprié
+2. Exécute `npm test` 
+3. Confirme que le nouveau test passe
+
+**Ce qui s'est passé** : 3 prompts dans UNE conversation, Copilot a utilisé @workspace (recherche) → @terminal (vérification) → outils Agent (édition + exécution) de manière fluide.
+
+---
+
+#### 🔬 Manipulation 3 — Custom Agent comme sub-agent (@mention)
+
+**Étape 1** — S'assurer que `code-reviewer.agent.md` existe (créé en 5c).
+
+**Étape 2** — En mode Agent, taper :
+```
+@code-reviewer Analyse #file:src/routes/tasks.js — focus sur les failles de sécurité
+```
+
+**Étape 3** — Observer la différence avec un prompt normal :
+- **Sans @code-reviewer** : Copilot donne une réponse généraliste
+- **Avec @code-reviewer** : Copilot utilise le persona défini (format 🔴🟡🟢, focus sécurité/perf)
+
+**Étape 4** — Enchaîner avec un autre agent :
+```
+@full-review Maintenant fais une revue complète du même fichier (code + tests + a11y)
+```
+Observer : le format change (3 passes structurées).
+
+---
+
+#### 🔬 Manipulation 4 — Agent orchestrateur avec `tools`
+
+**Concept** : Le champ `tools` dans l'en-tête d'un `.agent.md` détermine ce que l'agent PEUT FAIRE.
+
+**Étape 1** — Ouvrir `.github/agents/full-review.agent.md`. Observer l'en-tête :
+```yaml
 ---
 description: "Revue complète : code + tests + accessibilité"
 tools: ["changes", "editFiles", "runTerminalCommand"]
 ---
-# Full Review Agent
-
-Tu es un agent de revue complète. Quand on te demande de reviewer, tu effectues 3 passes :
-
-## Passe 1 — Qualité du code
-- Vérifie la cohérence avec les conventions du projet
-- Cherche les bugs potentiels
-- Vérifie la présence de JSDoc
-
-## Passe 2 — Tests
-- Vérifie que les fonctions modifiées ont des tests
-- Lance `npm test` pour confirmer que tout passe
-- Propose des tests manquants
-
-## Passe 3 — Accessibilité (si fichiers HTML/CSS modifiés)
-- Vérifie les aria-labels
-- Vérifie le contraste des couleurs
-- Vérifie la navigation clavier
-
-## Format de sortie
-```
-### 📋 Revue complète
-
-#### Code (X issues)
-- 🔴/🟡/🟢 ...
-
-#### Tests (X manquants)
-- ...
-
-#### Accessibilité (X problèmes)
-- ...
-
-### ✅ Verdict : APPROUVÉ / ⚠️ À CORRIGER
-```
 ```
 
-**Étape 3** — Sélectionner `full-review` dans le dropdown, taper :
+Les tools disponibles :
+
+| Tool | Ce qu'il permet à l'agent | Exemple d'usage |
+|------|--------------------------|-----------------|
+| `changes` | Voir les fichiers modifiés (git diff) | "Analyse les changements récents" |
+| `editFiles` | Créer et modifier des fichiers | "Crée un test manquant" |
+| `runTerminalCommand` | Exécuter des commandes shell | "Lance npm test" |
+| `codebase` | Chercher dans le code (comme @workspace) | "Trouve les usages de X" |
+| `fetch` | Faire des requêtes HTTP | "Vérifie que l'API répond" |
+| `useBrowser` | Utiliser le MCP Playwright | "Teste la page dans un navigateur" |
+
+**Étape 2** — Sélectionner `full-review` dans le **dropdown d'agent** (pas @mention) :
 ```
-Fais une revue complète du projet
+Dropdown agent → full-review
 ```
 
-**Étape 4** — Observer : l'agent exécute les 3 passes, lance les tests via le terminal, et produit un rapport structuré.
+**Étape 3** — Taper :
+```
+Fais une revue complète de src/services/taskService.js
+```
 
-#### 📊 Comment voir l'effet
+**Étape 4** — Observer Copilot orchestrer :
+1. **Passe 1 (code)** : Il lit le fichier, vérifie les conventions, cherche les bugs
+2. **Passe 2 (tests)** : Il exécute `npm test` via `runTerminalCommand`, vérifie la couverture
+3. **Passe 3 (a11y)** : Il vérifie si des fichiers HTML sont liés (skip si non)
+4. **Verdict** : Il produit le rapport structuré
 
-| Approche | Effort | Couverture |
-|----------|--------|-----------|
-| Chat normal : "Review mon code" | 1 prompt | Superficiel, généraliste |
-| `@code-reviewer` seul | 1 prompt | Sécurité + Perf uniquement |
-| `@full-review` orchestrateur | 1 prompt | Code + Tests + A11y (3 passes) |
-| 3 prompts séparés manuellement | 3 prompts, 3 conversations | Même couverture mais 3x plus d'effort |
+**Ce qui se passe visuellement dans VS Code** :
+- Vous voyez les "thinking..." et "Using tool: runTerminalCommand" apparaître
+- Le terminal s'active quand Copilot lance les tests
+- Le rapport final apparaît formaté dans le chat
 
-**Ce qui différencie un sub-agent** :
-- Un agent normal = un persona avec des instructions
-- Un sub-agent/orchestrateur = un persona qui **enchaîne plusieurs étapes** et **utilise des outils** (terminal, fichiers, navigateur)
+---
+
+#### 🔬 Manipulation 5 — Créer un agent qui utilise le navigateur (MCP + Agent)
+
+**Étape 1** — Créer `.github/agents/qa-tester.agent.md` :
+```markdown
+---
+description: "Agent QA qui teste l'app dans un vrai navigateur"
+tools: ["useBrowser", "runTerminalCommand", "editFiles"]
+---
+# QA Tester Agent
+
+Tu es un testeur QA automatisé. Quand on te demande de tester :
+
+1. Vérifie que le serveur tourne (sinon lance `npm run dev`)
+2. Ouvre le navigateur sur http://localhost:3000
+3. Exécute le scénario de test demandé
+4. Prends des screenshots à chaque étape clé
+5. Rapporte les résultats avec screenshots
+
+## Format de rapport
+- ✅ PASS : étape réussie (+ screenshot)
+- ❌ FAIL : étape échouée (+ screenshot + description du problème)
+
+## Fin du test
+Résumé : X/Y étapes passées
+```
+
+**Étape 2** — Sélectionner `qa-tester` dans le dropdown agent.
+
+**Étape 3** — Taper :
+```
+Teste le scénario suivant :
+1. Ouvre la page d'accueil
+2. Crée une tâche "Test QA" avec priorité haute
+3. Vérifie qu'elle apparaît dans la liste
+4. Supprime-la
+5. Vérifie qu'elle a disparu
+```
+
+**Étape 4** — Observer :
+- Copilot vérifie le serveur (terminal)
+- Lance Playwright (MCP)
+- Navigue, clique, remplit
+- Prend des screenshots à chaque étape
+- Produit un rapport avec les images inline
+
+---
+
+#### 📊 Tableau récapitulatif — Quand utiliser quoi
+
+| Besoin | Solution | Comment dans VS Code |
+|--------|----------|---------------------|
+| Recherche dans le projet | `@workspace` | Taper `@workspace` + question |
+| Exécuter une commande | `@terminal` | Taper `@terminal` + commande |
+| Configurer VS Code | `@vscode` | Taper `@vscode` + ce qu'on veut |
+| Persona spécialisé (1 tour) | `@mon-agent` | Taper `@nom` + prompt |
+| Persona spécialisé (toute la conv.) | Dropdown agent | Sélectionner dans le dropdown |
+| Workflow multi-étapes | Agent orchestrateur + `tools` | Créer `.agent.md` avec tools |
+| Actions dans un navigateur | Agent + MCP Playwright | tools: ["useBrowser"] |
+| Combinaison recherche + action | Mode Agent normal | Copilot orchestre tout seul |
+
+---
+
+#### ⚠️ Pièges courants
+
+| Piège | Symptôme | Solution |
+|-------|----------|----------|
+| Être en mode "Ask" au lieu de "Agent" | `@terminal` ne marche pas | Changer le dropdown en "Agent" |
+| Agent sans le bon `tools` | "Je ne peux pas exécuter de commandes" | Ajouter `runTerminalCommand` dans tools |
+| Trop de @mentions dans un prompt | Réponse confuse | 1 seul @participant par prompt |
+| Conversation trop longue | Tokens élevés, réponses lentes | Nouvelle conversation pour un nouveau sujet |
+| MCP non démarré | "Tool not available" | `Ctrl+Shift+P` → `MCP: Start Server` |
 
 ---
 
