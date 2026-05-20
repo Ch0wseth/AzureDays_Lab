@@ -1,0 +1,27 @@
+/* Custom styles for the Copilot Demo app */
+:root {
+  --orange-brand: #ff7900;
+}
+
+.badge.bg-primary {
+  background-color: var(--orange-brand) !important;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--orange-brand);
+  --bs-btn-border-color: var(--orange-brand);
+  --bs-btn-hover-bg: #e56a00;
+  --bs-btn-hover-border-color: #e56a00;
+}
+
+.task-card {
+  transition: transform 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+}
+
+.priority-high { border-left: 4px solid #dc3545; }
+.priority-medium { border-left: 4px solid #ff7900; }
+.priority-low { border-left: 4px solid #198754; }

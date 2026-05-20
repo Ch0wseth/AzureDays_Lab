@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Copilot Demo - Orange Boosted</title>
+  <!-- Orange Boosted CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/boosted@5.3.8/dist/css/boosted.min.css" rel="stylesheet"
+    integrity="sha384-kwpgedOHSHo219WTezLqyMOgCWremFb5TML711U5X8c4TJMMBAyhHFf2gNv78IpY" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <!-- Orange Navbar -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <img src="https://boosted.orange.com/docs/5.3/assets/brand/orange-logo.svg" width="50" height="50" alt="Orange" class="d-inline-block align-text-top">
+          <span class="ms-2">Copilot Demo</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link active" href="#tasks">Tâches</a></li>
+            <li class="nav-item"><a class="nav-link" href="#analytics">Analytiques</a></li>
+            <li class="nav-item"><a class="nav-link" href="#copilot">Copilot</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container py-4">
+    <!-- Hero Section -->
+    <section class="mb-5">
+      <div class="p-5 bg-body-secondary rounded-3">
+        <h1 class="display-5 fw-bold">🤖 GitHub Copilot Demo</h1>
+        <p class="lead">Application de démonstration montrant les capacités de GitHub Copilot dans VS Code avec l'interface Orange Boosted.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="badge bg-primary">Code Generation</span>
+          <span class="badge bg-success">Tests</span>
+          <span class="badge bg-warning text-dark">Documentation</span>
+          <span class="badge bg-info text-dark">MCP Playwright</span>
+          <span class="badge bg-secondary">Custom Agents</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Task Management Section -->
+    <section id="tasks" class="mb-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>📋 Gestionnaire de Tâches</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+          + Nouvelle Tâche
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <select class="form-select" id="filterStatus">
+            <option value="">Tous les statuts</option>
+            <option value="todo">À faire</option>
+            <option value="in_progress">En cours</option>
+            <option value="done">Terminé</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select" id="filterPriority">
+            <option value="">Toutes les priorités</option>
+            <option value="high">Haute</option>
+            <option value="medium">Moyenne</option>
+            <option value="low">Basse</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-outline-secondary w-100" id="btnRefresh">🔄 Rafraîchir</button>
+        </div>
+      </div>
+
+      <!-- Task List -->
+      <div id="taskList" class="list-group">
+        <div class="text-center text-muted py-4">Chargement des tâches...</div>
+      </div>
+    </section>
+
+    <!-- Analytics Section -->
+    <section id="analytics" class="mb-5">
+      <h2 class="mb-3">📊 Analytiques</h2>
+      <div class="row g-4" id="statsCards">
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h5 class="card-title">Total</h5>
+              <p class="display-6" id="statTotal">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center border-warning">
+            <div class="card-body">
+              <h5 class="card-title">À faire</h5>
+              <p class="display-6 text-warning" id="statTodo">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center border-info">
+            <div class="card-body">
+              <h5 class="card-title">En cours</h5>
+              <p class="display-6 text-info" id="statInProgress">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center border-success">
+            <div class="card-body">
+              <h5 class="card-title">Terminé</h5>
+              <p class="display-6 text-success" id="statDone">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Copilot Features Section -->
+    <section id="copilot" class="mb-5">
+      <h2 class="mb-3">🧠 Fonctionnalités Copilot démontrées</h2>
+      <div class="accordion" id="copilotAccordion">
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGen">
+              💻 Génération de Code
+            </button>
+          </h3>
+          <div id="collapseGen" class="accordion-collapse collapse show" data-bs-parent="#copilotAccordion">
+            <div class="accordion-body">
+              <ul>
+                <li><strong>Service CRUD complet</strong> - <code>taskService.js</code> généré avec JSDoc</li>
+                <li><strong>Routes Express</strong> - Endpoints REST avec validation et gestion d'erreurs</li>
+                <li><strong>Utilitaires</strong> - Fonctions de validation, sanitisation, pagination</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseModes">
+              🎯 Modes Copilot (Ask, Edit, Agent)
+            </button>
+          </h3>
+          <div id="collapseModes" class="accordion-collapse collapse" data-bs-parent="#copilotAccordion">
+            <div class="accordion-body">
+              <ul>
+                <li><strong>Ask Mode</strong> - Poser des questions sur le code, obtenir des explications</li>
+                <li><strong>Edit Mode</strong> - Refactoring, ajout de fonctionnalités inline</li>
+                <li><strong>Agent Mode</strong> - Tâches complexes multi-fichiers avec plan d'exécution</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCustom">
+              🔧 Custom Agents, Prompts & MCP
+            </button>
+          </h3>
+          <div id="collapseCustom" class="accordion-collapse collapse" data-bs-parent="#copilotAccordion">
+            <div class="accordion-body">
+              <ul>
+                <li><strong>Custom Instructions</strong> - <code>.github/copilot-instructions.md</code></li>
+                <li><strong>Prompt Files</strong> - <code>.github/prompts/*.prompt.md</code></li>
+                <li><strong>MCP Playwright</strong> - Tests E2E via serveur MCP</li>
+                <li><strong>Custom Agent</strong> - Agent spécialisé Orange Design System</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTokens">
+              ⚡ Optimisation des Tokens
+            </button>
+          </h3>
+          <div id="collapseTokens" class="accordion-collapse collapse" data-bs-parent="#copilotAccordion">
+            <div class="accordion-body">
+              <ul>
+                <li><strong>.copilotignore</strong> - Exclure fichiers non pertinents du contexte</li>
+                <li><strong>Instructions ciblées</strong> - Prompts précis pour réduire les allers-retours</li>
+                <li><strong>Fichiers .prompt.md</strong> - Réutiliser les prompts fréquents</li>
+                <li><strong>Vision Files</strong> - <code>#file</code> pour limiter le contexte envoyé</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add Task Modal -->
+  <div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Nouvelle Tâche</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addTaskForm">
+            <div class="mb-3">
+              <label for="taskTitle" class="form-label">Titre</label>
+              <input type="text" class="form-control" id="taskTitle" required minlength="3" maxlength="100">
+            </div>
+            <div class="mb-3">
+              <label for="taskDesc" class="form-label">Description</label>
+              <textarea class="form-control" id="taskDesc" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="taskPriority" class="form-label">Priorité</label>
+              <select class="form-select" id="taskPriority">
+                <option value="medium">Moyenne</option>
+                <option value="high">Haute</option>
+                <option value="low">Basse</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-primary" id="btnSaveTask">Créer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light py-3 mt-5">
+    <div class="container text-center">
+      <p class="mb-0">Demo GitHub Copilot &mdash; Orange Boosted Design System &mdash; 2026</p>
+    </div>
+  </footer>
+
+  <!-- Orange Boosted JS -->
+  <script src="https://cdn.jsdelivr.net/npm/boosted@5.3.8/dist/js/boosted.bundle.min.js"
+    integrity="sha384-lSjE7ZAWc1Wiua5r2jyHbPL07FiKkHPWCXugD3qTq4o4M4YZQzLTrDF1CXrjxU/m" crossorigin="anonymous"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

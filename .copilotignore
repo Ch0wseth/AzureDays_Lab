@@ -1,0 +1,7 @@
+# Token optimization - exclude files that pollute Copilot context
+node_modules/
+dist/
+coverage/
+*.lock
+*.log
+.git/
