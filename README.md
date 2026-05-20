@@ -637,6 +637,28 @@ Installe l'instruction "nodejs" depuis awesome-copilot
 
 ## 📐 Bonnes Pratiques de Prompting pour Copilot
 
+> ⚠️ **Tout se fait dans VS Code** — aucun outil externe requis.
+
+### 🛠️ Préparation dans VS Code (une seule fois)
+
+1. **Activer l'affichage des tokens** :
+   - `Ctrl+Shift+P` → `Preferences: Open User Settings (JSON)`
+   - Ajouter :
+     ```json
+     "github.copilot.advanced.debug.showTokenCount": true,
+     "chat.experimental.showTokenCount": true
+     ```
+
+2. **Ouvrir le panneau Output pour voir les tokens** :
+   - `Ctrl+Shift+U` (ouvre le panneau Output)
+   - Dans le dropdown en haut à droite du panneau, sélectionner **"GitHub Copilot Chat"**
+   - Vous verrez les lignes `request token count: XXXX` et `response token count: XXXX` après chaque prompt
+
+3. **Ouvrir Copilot Chat** :
+   - `Ctrl+Alt+I` (ou cliquer l'icône Copilot dans la barre latérale)
+
+4. **Astuce** : Positionner le panneau Output en bas et Copilot Chat à droite pour voir les deux en simultané.
+
 > **Comment mesurer l'efficacité** : Pour chaque manipulation, notez les tokens IN/OUT affichés dans le panneau Output → "GitHub Copilot Chat". Comparez les valeurs entre le ❌ mauvais prompt et le ✅ bon prompt.
 
 ---
@@ -828,12 +850,13 @@ Mais pour des utilisateurs (id, email, name, role, createdAt)
 
 #### 🔬 Manipulation
 
-**Étape 1** — Introduire volontairement un bug dans `src/services/taskService.js` :
+**Étape 1** — Dans VS Code, ouvrir `src/services/taskService.js` et modifier temporairement une ligne dans `deleteTask()` pour introduire un bug visible :
 ```javascript
-// Changer cette ligne dans deleteTask() :
+// Trouver dans deleteTask() la ligne :
 const index = this.tasks.findIndex(t => t.id === id);
-// En :
-const index = this.tasks.findIndex(t => t.id == id);
+// La remplacer par (bug : splice avec mauvais argument) :
+const index = this.tasks.findIndex(t => t.id === id);
+this.tasks.splice(index); // ← BUG : supprime tout à partir de l'index au lieu d'un seul élément
 ```
 
 **Étape 2** — Taper dans Copilot Chat :
