@@ -144,7 +144,7 @@ Ouvrir les settings (`Ctrl+,`) → cliquer sur l'icône `{}` en haut à droite (
 ### Vérifier que les Custom Instructions sont chargées
 
 1. Ouvrir `.github/copilot-instructions.md`
-2. Ouvrir Copilot Chat (`Ctrl+Shift+I`)
+2. Ouvrir Copilot Chat (`Ctrl+Alt+I`)
 3. Taper : `Quel framework CSS utilise ce projet ?`
 4. Copilot doit répondre "Orange Boosted" (preuve qu'il a lu les instructions)
 
@@ -242,7 +242,7 @@ Montrer que Copilot génère des tests unitaires complets et pertinents.
 
 **Méthode 1 — Commande /tests** :
 
-1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+1. **Ouvrir** Copilot Chat : `Ctrl+Alt+I`
 2. **Taper exactement** :
 
 ```
@@ -254,7 +254,7 @@ Montrer que Copilot génère des tests unitaires complets et pertinents.
 
 **Méthode 2 — Prompt File personnalisé** :
 
-1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+1. **Ouvrir** Copilot Chat : `Ctrl+Alt+I`
 2. **Taper** `/` (slash) → une liste de prompts apparaît
 3. **Sélectionner** `generate-tests`
 4. **Compléter** avec : `pour le fichier src/utils/validators.js`
@@ -286,7 +286,7 @@ Montrer que Copilot génère de la documentation JSDoc riche et précise.
 
 1. **Ouvrir** `src/utils/validators.js`
 2. **Sélectionner** la fonction `sanitizeInput` (lignes 19-27 environ)
-3. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+3. **Ouvrir** Copilot Chat : `Ctrl+Alt+I`
 4. **Taper exactement** :
 
 ```
@@ -336,7 +336,7 @@ Montrer les 3 modes d'interaction avec Copilot et leurs cas d'usage.
 
 **Modus Operandi** :
 
-1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+1. **Ouvrir** Copilot Chat : `Ctrl+Alt+I`
 2. **S'assurer** que le mode est "Ask" (dropdown en haut du chat)
 3. **Taper exactement** :
 
@@ -403,7 +403,7 @@ if (description.length > 200) {
 
 **Modus Operandi** :
 
-1. **Ouvrir** Copilot Chat : `Ctrl+Shift+I`
+1. **Ouvrir** Copilot Chat : `Ctrl+Alt+I`
 2. **Changer le mode** : cliquer sur le dropdown en haut → sélectionner **"Agent"**
 3. **Taper exactement** :
 
@@ -3953,7 +3953,7 @@ code .
 
 # 5. Dans VS Code, vérifier :
 #    - Ctrl+Shift+P → "MCP: List Servers" → playwright visible
-#    - Ctrl+Shift+I → taper "Quel framework ?" → doit répondre "Orange Boosted"
+#    - Ctrl+Alt+I → taper "Quel framework ?" → doit répondre "Orange Boosted"
 #    - Ctrl+Shift+U → dropdown → "GitHub Copilot Chat" → logs visibles
 
 # 6. Prêt ! Suivre le README à partir de "DÉMO 1"

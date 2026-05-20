@@ -6,7 +6,8 @@ description: "Générer un CRUD complet (service + route + tests)"
 Génère les 3 fichiers pour un nouveau module CRUD :
 
 ## 1. Service (src/services/{nom}Service.js)
-- Classe avec Map() in-memory
+- Fonctions exportées individuellement (named exports)
+- Map() in-memory comme store
 - Méthodes : getAll, getById, create, update, delete
 - JSDoc, validation, createdAt/updatedAt
 - ID auto-généré avec crypto.randomUUID()

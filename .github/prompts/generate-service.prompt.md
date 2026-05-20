@@ -6,7 +6,7 @@ description: "Créer un nouveau service CRUD avec in-memory store"
 Crée un nouveau service dans `src/services/` avec :
 
 ## Structure obligatoire
-- Export default d'une classe avec méthodes CRUD
+- Fonctions exportées individuellement (named exports)
 - Store in-memory avec `new Map()`
 - ID auto-généré avec `crypto.randomUUID()`
 
