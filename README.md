@@ -637,210 +637,439 @@ Installe l'instruction "nodejs" depuis awesome-copilot
 
 ## 📐 Bonnes Pratiques de Prompting pour Copilot
 
-### Règle 1 — Être spécifique et contextuel
-
-❌ **Mauvais prompt** :
-```
-Fais moi une fonction
-```
-
-✅ **Bon prompt** :
-```
-Crée une fonction validateEmail(email: string): boolean qui utilise une regex RFC 5322 et retourne false pour les adresses jetables (mailinator, yopmail)
-```
-
-**Pourquoi** : Plus le prompt est précis, moins Copilot fait d'allers-retours = moins de tokens.
+> **Comment mesurer l'efficacité** : Pour chaque manipulation, notez les tokens IN/OUT affichés dans le panneau Output → "GitHub Copilot Chat". Comparez les valeurs entre le ❌ mauvais prompt et le ✅ bon prompt.
 
 ---
 
-### Règle 2 — Donner le format de sortie attendu
+### Pratique 1 — Être spécifique et contextuel
 
-❌ **Mauvais prompt** :
+#### 🔬 Manipulation
+
+**Étape 1** — Ouvrir Copilot Chat, taper le prompt vague :
 ```
-Ajoute de la validation
+Fais moi une fonction de validation
 ```
 
-✅ **Bon prompt** :
+**Étape 2** — Observer la réponse : Copilot va demander des précisions ou générer quelque chose de générique. Noter les tokens.
+
+**Étape 3** — Nouvelle conversation (icône `+`), taper le prompt précis :
 ```
-Ajoute la validation suivante dans createTask() :
-- title : string, 3-100 chars, obligatoire
+Crée une fonction validateEmail(email) en JavaScript ES Module qui :
+- Vérifie le format avec une regex
+- Retourne false pour les domaines jetables (mailinator.com, yopmail.com, guerrillamail.com)
+- Retourne { valid: boolean, reason: string }
+```
+
+**Étape 4** — Comparer.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Prompt vague | Prompt précis |
+|----------|-------------|---------------|
+| Tokens OUT | ~500-800 (code générique + questions) | ~200-350 (code ciblé) |
+| Nombre de tours | 2-3 (Copilot demande des précisions) | 1 seul tour |
+| Code utilisable | ❌ À refaire | ✅ Directement utilisable |
+
+**Où regarder** : Panneau Output → "GitHub Copilot Chat" → lignes `[chat fetch] request token count: X` et `response token count: Y`
+
+---
+
+### Pratique 2 — Donner le format de sortie attendu
+
+#### 🔬 Manipulation
+
+**Étape 1** — Ouvrir `src/services/taskService.js`, taper dans Copilot Chat :
+```
+Ajoute de la validation dans createTask
+```
+
+**Étape 2** — Observer : Copilot va probablement générer une validation partielle ou dans un format différent de l'existant. Noter les tokens.
+
+**Étape 3** — Nouvelle conversation, taper :
+```
+#file:src/services/taskService.js Ajoute la validation suivante dans createTask() :
+
+Règles :
+- title : string, 3-100 chars, obligatoire → Error("Title must be 3-100 characters")
 - description : string, max 500 chars, optionnel
-- priority : enum "low" | "medium" | "high", défaut "medium"
-Lancer une Error avec un message explicite si invalide.
+- priority : "low" | "medium" | "high" uniquement → Error("Invalid priority")
+
+Format du code :
+- Validation au début de la fonction (early return pattern)
+- Utiliser les mêmes patterns que validatePagination dans validators.js
 ```
 
-**Pourquoi** : Copilot génère exactement ce qu'on veut du premier coup.
+**Étape 4** — Comparer la qualité et le nombre de tokens.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Sans format | Avec format |
+|----------|-------------|-------------|
+| Tokens OUT | ~400 (code + explications non demandées) | ~250 (juste le code demandé) |
+| Retouches nécessaires | 2-3 corrections manuelles | 0 retouche |
+| Cohérence avec le projet | ❌ Style différent | ✅ Même patterns |
 
 ---
 
-### Règle 3 — Utiliser `#file:` pour limiter le contexte
+### Pratique 3 — Utiliser `#file:` pour limiter le contexte
 
-❌ **Mauvais prompt** :
-```
-Explique le code de gestion des tâches
-```
+#### 🔬 Manipulation
 
-✅ **Bon prompt** :
+**Étape 1** — Ouvrir **5 fichiers** dans VS Code (app.js, taskService.js, validators.js, index.html, app.css). Taper dans Copilot Chat :
 ```
-#file:src/services/taskService.js Explique la logique de filtrage dans getTasks()
+Explique la logique de filtrage des tâches
 ```
 
-**Pourquoi** : Copilot n'envoie que le fichier ciblé → 60-80% de tokens IN en moins.
+**Étape 2** — Observer les tokens IN dans le panneau Output. Copilot envoie le contenu de tous les fichiers ouverts comme contexte.
+
+**Étape 3** — Nouvelle conversation, taper :
+```
+#file:src/services/taskService.js Explique uniquement la logique de filtrage dans getTasks()
+```
+
+**Étape 4** — Observer les tokens IN : seul taskService.js est envoyé.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Sans #file: (5 fichiers ouverts) | Avec #file: ciblé |
+|----------|----------------------------------|-------------------|
+| Tokens IN | ~3000-5000 (tous les fichiers ouverts) | ~800-1000 (1 seul fichier) |
+| Réduction | — | **-70 à -80%** |
+| Pertinence réponse | Mélange infos de plusieurs fichiers | Focalisé sur getTasks() |
+
+**Astuce démo** : Ouvrir le panneau Output AVANT d'envoyer chaque prompt pour voir en temps réel les tokens envoyés.
 
 ---
 
-### Règle 4 — Structurer les demandes complexes en liste
+### Pratique 4 — Structurer les demandes complexes en liste
 
-❌ **Mauvais prompt** :
+#### 🔬 Manipulation
+
+**Étape 1** — Taper en une seule phrase :
 ```
-J'aimerais que tu crées un endpoint pour les utilisateurs qui gère la création avec validation et les erreurs et aussi les tests
+J'aimerais que tu crées un endpoint pour les utilisateurs qui gère la création avec validation et les erreurs et aussi les tests unitaires
 ```
 
-✅ **Bon prompt** :
+**Étape 2** — Vérifier : est-ce que TOUT est là ? (validation, erreurs 400, tests pour chaque cas edge)
+
+**Étape 3** — Nouvelle conversation, taper en structure :
 ```
-Crée un endpoint POST /api/users :
+Crée un endpoint POST /api/users dans un nouveau fichier src/routes/users.js :
 
-1. Validation :
-   - email : format valide, unique
-   - name : 2-50 chars
-   - role : "admin" | "user"
+1. Validation entrée :
+   - email : format valide (regex), obligatoire
+   - name : string 2-50 chars, obligatoire  
+   - role : "admin" | "user", défaut "user"
 
-2. Réponse :
+2. Réponses HTTP :
    - 201 + { data: user } si succès
-   - 400 + { error: message } si validation échoue
+   - 400 + { error: "message explicite" } si validation échoue
 
-3. Tests Jest :
-   - Cas valide
-   - Email invalide
-   - Email dupliqué
-   - Role invalide
+3. Tests Jest dans tests/users.test.js :
+   - POST valide → 201
+   - Email invalide → 400
+   - Name trop court → 400
+   - Role invalide → 400
+   - Email manquant → 400
 ```
 
-**Pourquoi** : Structure claire = Copilot organise sa réponse, pas de oubli.
+**Étape 4** — Comparer la complétude.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Phrase continue | Liste structurée |
+|----------|----------------|-----------------|
+| Éléments oubliés | 1-2 cas edge manquants | 0 oubli |
+| Tests générés | 2-3 tests basiques | 5 tests (tous les cas) |
+| Tours nécessaires | 2+ ("tu as oublié...") | 1 seul tour |
+| Tokens totaux (multi-tours) | ~1500 | ~900 |
 
 ---
 
-### Règle 5 — Référencer des exemples existants
+### Pratique 5 — Référencer des exemples existants
 
-❌ **Mauvais prompt** :
-```
-Crée un nouveau service
-```
+#### 🔬 Manipulation
 
-✅ **Bon prompt** :
+**Étape 1** — Taper sans référence :
 ```
-#file:src/services/taskService.js Crée un service userService.js avec la même structure (in-memory store, CRUD, JSDoc, validation) mais pour des utilisateurs (id, email, name, role)
+Crée un service de gestion des utilisateurs
 ```
 
-**Pourquoi** : Copilot reproduit les patterns existants → cohérence garantie.
+**Étape 2** — Observer le style du code généré (noms de fonctions, pattern de store, JSDoc ou pas...).
+
+**Étape 3** — Nouvelle conversation, taper avec référence :
+```
+#file:src/services/taskService.js
+
+Crée un service src/services/userService.js avec exactement la même structure :
+- Même pattern de store in-memory avec Map
+- Même nommage (getAll, getById, create, update, delete)
+- Même style JSDoc
+- Même pattern de validation en début de fonction
+Mais pour des utilisateurs (id, email, name, role, createdAt)
+```
+
+**Étape 4** — Comparer les deux fichiers : le second sera cohérent avec taskService.js.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Sans référence | Avec #file: référence |
+|----------|---------------|----------------------|
+| Style cohérent avec le projet | ❌ Style générique | ✅ Même patterns |
+| JSDoc présent | Aléatoire | ✅ Oui (copie le style) |
+| Retouches pour conformité | 5-10 min d'adaptation | 0 retouche |
+| Tokens OUT | Similaire | Similaire mais **0 retravail** |
+
+**Ce qu'on mesure ici** : pas les tokens bruts mais le **temps gagné** et la **cohérence projet**.
 
 ---
 
-### Règle 6 — Demander un format de réponse minimal quand c'est suffisant
+### Pratique 6 — Demander un format de réponse minimal
 
-❌ **Prompt qui génère trop** :
-```
-Comment corriger cette erreur ?
+#### 🔬 Manipulation
+
+**Étape 1** — Introduire volontairement un bug dans `src/services/taskService.js` :
+```javascript
+// Changer cette ligne dans deleteTask() :
+const index = this.tasks.findIndex(t => t.id === id);
+// En :
+const index = this.tasks.findIndex(t => t.id == id);
 ```
 
-✅ **Prompt optimisé** :
+**Étape 2** — Taper dans Copilot Chat :
 ```
-Corrige cette erreur. Donne uniquement le code modifié, pas d'explication.
+#file:src/services/taskService.js Il y a un bug dans deleteTask, comment le corriger ?
 ```
 
-**Pourquoi** : Réduit les tokens OUT de 50%+ quand on n'a pas besoin d'explications.
+**Étape 3** — Observer : Copilot donne le fix + 10-15 lignes d'explications. Noter tokens OUT.
+
+**Étape 4** — Nouvelle conversation, taper :
+```
+#file:src/services/taskService.js Corrige le bug dans deleteTask(). Code uniquement, pas d'explication.
+```
+
+**Étape 5** — Comparer les tokens OUT.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | "Comment corriger ?" | "Code uniquement" |
+|----------|---------------------|-------------------|
+| Tokens OUT | ~300-500 (code + explications) | ~80-120 (code seul) |
+| Réduction | — | **-60 à -75%** |
+| Info utile perdue | Non (on sait déjà pourquoi) | Non |
+
+**Quand utiliser** : quand on sait déjà ce qu'on veut et qu'on n'a pas besoin d'explications.
 
 ---
 
-### Règle 7 — Utiliser les commandes intégrées quand elles existent
+### Pratique 7 — Utiliser les commandes slash intégrées
 
-| Au lieu de taper... | Utiliser |
-|---------------------|----------|
-| "Génère les tests pour cette fonction" | `/tests` |
-| "Documente cette fonction" | `/doc` |
-| "Explique ce code" | `/explain` |
-| "Corrige ce bug" | `/fix` |
+#### 🔬 Manipulation
 
-**Pourquoi** : Les commandes `/` sont optimisées côté tokens par GitHub.
+**Étape 1** — Sélectionner la fonction `createTask()` dans `taskService.js`. Taper :
+```
+Génère les tests unitaires pour cette fonction sélectionnée
+```
+Noter les tokens IN + OUT.
+
+**Étape 2** — Même sélection, taper simplement :
+```
+/tests
+```
+Noter les tokens IN + OUT.
+
+**Étape 3** — Comparer.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Prompt écrit | Commande /tests |
+|----------|-------------|-----------------|
+| Tokens IN (prompt) | ~20 tokens de prompt | ~5 tokens (commande optimisée) |
+| Tokens OUT | Similaire | Similaire mais mieux structuré |
+| Qualité | Variable | Constante (prompt interne testé) |
+
+**Autres commandes à tester** :
+- Sélectionner une fonction → `/doc` vs "Documente cette fonction"
+- Sélectionner du code → `/explain` vs "Explique ce code"
+- Sélectionner un bug → `/fix` vs "Corrige ce bug"
 
 ---
 
-### Règle 8 — Itérer plutôt que tout demander d'un coup
+### Pratique 8 — Itérer plutôt que tout demander d'un coup
 
-❌ **Prompt trop ambitieux** :
+#### 🔬 Manipulation
+
+**Étape 1** — Taper un prompt "monolithe" :
 ```
-Crée une app complète de gestion de projet avec auth, CRUD, notifications, tests, CI/CD et déploiement
+Crée un système complet de notifications avec : un service de notifications, les routes REST, les tests, l'intégration WebSocket, et la gestion des préférences utilisateur
+```
+Observer : code très long, probablement des erreurs, des incohérences.
+
+**Étape 2** — Approche itérative (nouvelle conversation pour chaque étape) :
+
+```
+Tour 1 : Crée src/services/notificationService.js avec : create(userId, message, type), getByUser(userId), markAsRead(id). Store in-memory avec Map.
+```
+Valider → ça marche → tour suivant :
+```
+Tour 2 : #file:src/services/notificationService.js Crée les routes REST dans src/routes/notifications.js : GET /api/notifications/:userId, POST /api/notifications, PATCH /api/notifications/:id/read
+```
+Valider → ça marche → tour suivant :
+```
+Tour 3 : #file:src/services/notificationService.js #file:src/routes/notifications.js Crée les tests Jest dans tests/notifications.test.js
 ```
 
-✅ **Approche itérative** :
-```
-Étape 1 : Crée le modèle User avec validation
-Étape 2 : Crée les routes CRUD pour User
-Étape 3 : Ajoute l'authentification JWT
-...
-```
+#### 📊 Comment voir l'efficacité
 
-**Pourquoi** : Chaque itération est focalisée → meilleure qualité et debugging plus facile.
+| Métrique | Tout d'un coup | Itératif (3 tours) |
+|----------|---------------|-------------------|
+| Tokens totaux | ~2000 IN + ~3000 OUT = 5000 | ~1500 IN + ~2000 OUT = 3500 |
+| Bugs dans le code | 2-5 erreurs | 0-1 erreurs |
+| Tests qui passent au 1er run | ~60% | ~95% |
+| Temps de debug | 15-20 min | 2-3 min |
+
+**Ce qu'on mesure** : tokens totaux INCLUANT les corrections et relances nécessaires.
 
 ---
 
-### Règle 9 — Préciser la technologie et les contraintes
+### Pratique 9 — Préciser la technologie et les contraintes
 
-❌ **Ambigu** :
+#### 🔬 Manipulation
+
+**Étape 1** — Taper un prompt ambigu :
 ```
-Fais un cache
+Fais un cache pour les requêtes API
+```
+Observer : Copilot peut proposer Redis, un package npm, ou un objet simple. Peut être en CommonJS.
+
+**Étape 2** — Nouvelle conversation, taper avec contraintes :
+```
+Crée src/utils/cache.js — un cache LRU in-memory en JavaScript ES Module :
+- Pas de dépendance externe (pas de npm install)
+- Capacité max configurable (défaut: 100 entrées)
+- TTL par entrée en ms (défaut: 300000 = 5 min)
+- API : get(key), set(key, value, ttl?), delete(key), clear(), size()
+- Éviction automatique de la plus vieille entrée quand capacité atteinte
+- Export default class Cache
 ```
 
-✅ **Précis** :
-```
-Implémente un cache LRU in-memory en JavaScript ES Module :
-- Capacité max configurable (défaut: 100)
-- TTL par entrée (défaut: 5 min)
-- Méthodes : get(key), set(key, value, ttl?), delete(key), clear()
-- Pas de dépendance externe
-```
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Prompt ambigu | Prompt avec contraintes |
+|----------|--------------|------------------------|
+| Résultat utilisable tel quel | ❌ (mauvaise techno ou format) | ✅ |
+| Nombre de relances | 2-3 ("non pas Redis", "en ESM pas CJS") | 0 |
+| Tokens sur l'ensemble | ~2000 (multi-tours) | ~800 (1 tour) |
+| Réduction totale | — | **-60%** |
 
 ---
 
-### Règle 10 — Utiliser les Prompt Files pour les patterns récurrents
+### Pratique 10 — Utiliser les Prompt Files pour les patterns récurrents
 
-Si vous demandez souvent la même chose (créer un route, un test, un composant), mettez-le dans `.github/prompts/` :
+#### 🔬 Manipulation
 
-```markdown
----
-description: "Créer un endpoint Express standard"
----
-# Template
-- ES Modules
-- JSDoc
-- Error handling try/catch
-- Response format { data } ou { error }
-- Status codes 200/201/400/404
+**Étape 1** — Taper manuellement le prompt complet pour créer une route :
 ```
+Crée une route Express dans un nouveau fichier :
+- ES Modules (import/export)
+- JSDoc sur chaque fonction
+- Try/catch avec gestion erreurs
+- Réponse format { data } ou { error }
+- Status codes appropriés 200/201/400/404/500
+- Validation des inputs en début de handler
+- Router Express exporté par défaut
+Crée la route GET /api/categories qui retourne une liste de catégories
+```
+Ce prompt fait ~80 tokens IN à chaque utilisation.
 
-Ensuite taper `/generate-route` au lieu de réécrire le prompt à chaque fois.
+**Étape 2** — Utiliser le prompt file. Taper dans le chat :
+```
+/generate-route Crée GET /api/categories qui retourne une liste de catégories
+```
+Le prompt file `.github/prompts/generate-route.prompt.md` contient déjà les conventions → 15 tokens IN de votre côté.
 
-**Pourquoi** : 
-- Gain de tokens IN à chaque utilisation
-- Prompts testés et fiabilisés au fil du temps
-- Cohérence dans l'équipe
+**Étape 3** — Comparer les tokens IN entre les deux approches.
+
+#### 📊 Comment voir l'efficacité
+
+| Métrique | Prompt manuel à chaque fois | Prompt File |
+|----------|---------------------------|-------------|
+| Tokens IN (prompt utilisateur) | ~80 tokens | ~15 tokens |
+| Cohérence entre routes | ❌ On oublie des règles | ✅ Toujours les mêmes |
+| Temps de frappe | 30 sec | 5 sec |
+| Sur 10 routes créées | ~800 tokens de prompts | ~150 tokens de prompts |
+
+**Comment créer vos propres Prompt Files** :
+1. Créer un fichier `.github/prompts/mon-pattern.prompt.md`
+2. Ajouter le frontmatter :
+   ```markdown
+   ---
+   description: "Description affichée dans le menu de sélection"
+   ---
+   ```
+3. Écrire le template de prompt avec les instructions fixes
+4. Utiliser avec `/mon-pattern` suivi de la partie variable
 
 ---
 
-### Récapitulatif
+### 🧪 Exercice Récapitulatif — Comparaison complète
 
-| Pratique | Impact |
-|----------|--------|
-| Être spécifique | Moins d'allers-retours |
-| Format de sortie | Réponse du premier coup |
-| `#file:` ciblé | -60-80% tokens IN |
-| Listes structurées | Rien d'oublié |
-| Référencer l'existant | Cohérence projet |
-| Demander le minimum | -50% tokens OUT |
-| Commandes `/` | Optimisé par GitHub |
-| Itérer | Meilleure qualité |
-| Préciser la techno | Pas d'ambiguïté |
-| Prompt Files | Réutilisable et fiable |
+Pour voir l'impact cumulé de toutes les pratiques, faire cette manipulation :
+
+**Test A — Sans bonnes pratiques** :
+1. Ouvrir 8+ fichiers dans VS Code
+2. Taper dans Copilot Chat :
+   ```
+   Ajoute un système de tags aux tâches avec la possibilité d'ajouter et retirer des tags, de filtrer par tags, et fais les tests
+   ```
+3. Noter : tokens IN, tokens OUT, nombre de tours, temps total, bugs
+
+**Test B — Avec toutes les bonnes pratiques** :
+1. Fermer tous les fichiers sauf `taskService.js`
+2. Taper :
+   ```
+   #file:src/services/taskService.js
+
+   Ajoute la gestion des tags dans taskService.js :
+   
+   1. Modifier createTask() : accepter un champ tags (array de strings, défaut [])
+   2. Ajouter addTag(taskId, tag) : ajoute un tag si pas déjà présent
+   3. Ajouter removeTag(taskId, tag) : retire un tag
+   4. Modifier getTasks() : accepter un filtre ?tag=xxx qui filtre les tâches ayant ce tag
+   
+   Même style JSDoc que les fonctions existantes.
+   Code uniquement, pas d'explication.
+   ```
+3. Noter : tokens IN, tokens OUT, nombre de tours, temps total, bugs
+
+#### 📊 Résultats attendus
+
+| Métrique | Test A (sans pratiques) | Test B (avec pratiques) |
+|----------|------------------------|------------------------|
+| Tokens IN | ~4000-6000 | ~1000-1500 |
+| Tokens OUT | ~2000-3000 | ~800-1200 |
+| Total tokens | ~6000-9000 | ~1800-2700 |
+| Tours nécessaires | 3-5 | 1 |
+| Bugs | 2-4 | 0-1 |
+| Temps total | 10-15 min | 2-3 min |
+| **Réduction globale** | — | **-60 à -70%** |
+
+---
+
+### Récapitulatif — Tableau de référence rapide
+
+| # | Pratique | Manipulation | Comment mesurer |
+|---|----------|-------------|-----------------|
+| 1 | Être spécifique | Prompt vague vs précis | Compter les tours nécessaires |
+| 2 | Format de sortie | Avec/sans spécification du format | Retouches manuelles nécessaires |
+| 3 | `#file:` ciblé | 5 fichiers ouverts vs #file: | Tokens IN dans Output panel |
+| 4 | Listes structurées | Phrase vs liste numérotée | Éléments oubliés dans la réponse |
+| 5 | Référencer l'existant | Sans vs avec #file: référence | Cohérence du code (diff visuel) |
+| 6 | Réponse minimale | Avec vs sans "code uniquement" | Tokens OUT (-60-75%) |
+| 7 | Commandes `/` | Prompt écrit vs /tests, /doc | Tokens IN + qualité constante |
+| 8 | Itérer | Monolithe vs 3 petits tours | Bugs + tokens corrections |
+| 9 | Préciser la techno | Ambigu vs contraint | Tours de clarification évités |
+| 10 | Prompt Files | Manuel vs /generate-route | Tokens IN sur 10 utilisations |
 
 ---
 
