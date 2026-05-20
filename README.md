@@ -460,7 +460,102 @@ Créer from scratch chaque type de personnalisation Copilot et observer son effe
 
 ---
 
-### 5a. Créer des Instructions personnalisées (copilot-instructions.md)
+### 📖 Vue d'ensemble — Les 6 mécanismes de personnalisation
+
+Avant de commencer, voici ce que chaque mécanisme fait et comment il se matérialise dans VS Code :
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    PERSONNALISATION COPILOT                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  📋 INSTRUCTIONS                    🤖 AGENTS                           │
+│  ┌──────────────────────┐           ┌──────────────────────┐            │
+│  │ .github/              │           │ .github/agents/       │           │
+│  │   copilot-instructions│           │   code-reviewer.md   │            │
+│  │   .md                 │           │   qa-tester.md       │            │
+│  │                       │           │   caveman-mode.md    │            │
+│  │ Effet : injecté       │           │                       │           │
+│  │ automatiquement à     │           │ Effet : sélectionnable│           │
+│  │ CHAQUE requête        │           │ dans le dropdown      │           │
+│  └──────────────────────┘           └──────────────────────┘            │
+│                                                                          │
+│  📋 INSTRUCTIONS COND.              📝 PROMPT FILES                     │
+│  ┌──────────────────────┐           ┌──────────────────────┐            │
+│  │ .github/instructions/ │           │ .github/prompts/      │           │
+│  │   tests.instructions  │           │   generate-route.md  │            │
+│  │   .md (applyTo:       │           │   generate-tests.md  │            │
+│  │   "tests/**")         │           │                       │           │
+│  │                       │           │ Effet : invocable     │           │
+│  │ Effet : injecté       │           │ avec /nom dans chat   │           │
+│  │ seulement pour les    │           │                       │           │
+│  │ fichiers qui matchent │           └──────────────────────┘            │
+│  └──────────────────────┘                                                │
+│                                                                          │
+│  🔧 MCP SERVERS                     🎯 SKILLS                           │
+│  ┌──────────────────────┐           ┌──────────────────────┐            │
+│  │ .vscode/mcp.json      │           │ Agent + MCP + Prompt  │           │
+│  │   playwright          │           │ combinés ensemble     │           │
+│  │   awesome-copilot     │           │                       │           │
+│  │                       │           │ Effet : workflow       │           │
+│  │ Effet : donne des     │           │ complet automatisé    │           │
+│  │ CAPACITÉS (naviguer,  │           │ (ex: audit a11y =     │           │
+│  │ cliquer, DB, API)     │           │ prompt + navigateur)  │           │
+│  └──────────────────────┘           └──────────────────────┘            │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+| Mécanisme | Fichier | Activation | Portée |
+|-----------|---------|-----------|--------|
+| Instructions projet | `.github/copilot-instructions.md` | Automatique | Toutes les requêtes |
+| Instructions conditionnelles | `.github/instructions/*.md` | Automatique si glob matche | Fichiers spécifiques |
+| Prompt Files | `.github/prompts/*.prompt.md` | Manuelle (`/nom`) | 1 requête |
+| Custom Agents | `.github/agents/*.agent.md` | Manuelle (dropdown) | Toute la conversation |
+| MCP Servers | `.vscode/mcp.json` | Automatique (mode Agent) | Ajoute des outils |
+| Skills | Agent + MCP + Prompt combinés | Manuelle | Workflow complet |
+
+---
+
+### 5a. Instructions — Le contexte permanent automatique
+
+#### 📖 Concept
+
+Les **Instructions** sont du texte injecté automatiquement dans CHAQUE requête à Copilot. Vous n'avez rien à faire — dès que le fichier existe, Copilot le lit.
+
+**2 types d'instructions** :
+
+| Type | Fichier | Quand c'est injecté |
+|------|---------|-------------------|
+| **Projet** (global) | `.github/copilot-instructions.md` | TOUJOURS, à chaque requête |
+| **Conditionnel** | `.github/instructions/nom.instructions.md` | Seulement quand le fichier actif matche le glob `applyTo` |
+
+**Où ça apparaît dans VS Code** :
+- Vous ne voyez RIEN dans l'UI — c'est invisible. Les instructions sont envoyées en coulisse.
+- Pour prouver qu'elles sont actives : observer le comportement de Copilot (langue, style, classes CSS).
+- Pour voir l'impact tokens : regarder `request token count` dans Output (il inclut les instructions).
+
+**Format du fichier** :
+
+```markdown
+# .github/copilot-instructions.md (instructions globales — PAS de frontmatter)
+
+## Contexte Projet
+Description du projet, stack, architecture...
+
+## Conventions
+- Style de code
+- Langue
+- Frameworks/librairies à utiliser
+```
+
+```markdown
+# .github/instructions/nom.instructions.md (conditionnel — AVEC frontmatter)
+---
+applyTo: "src/routes/**"
+---
+Instructions spécifiques aux routes...
+```
 
 **Ce que c'est** : Un fichier `.github/copilot-instructions.md` qui injecte du contexte permanent à Copilot à chaque requête.
 
@@ -551,9 +646,38 @@ Observer : les conventions de routes NE S'APPLIQUENT PAS (le fichier est hors du
 
 ---
 
-### 5b. Créer des Prompt Files réutilisables
+### 5b. Prompt Files — Les templates réutilisables
 
-**Ce que c'est** : Des templates de prompts dans `.github/prompts/` invocables avec `/nom`.
+#### 📖 Concept
+
+Les **Prompt Files** sont des templates de prompts stockés dans `.github/prompts/`. Ils sont invocables à la demande avec `/nom-du-fichier` dans Copilot Chat.
+
+**Différence avec les Instructions** :
+- Instructions = injectées automatiquement (vous ne les appelez jamais)
+- Prompt Files = appelés manuellement quand VOUS décidez (`/nom`)
+
+**Où ça apparaît dans VS Code** :
+- Taper `/` dans Copilot Chat → la liste de vos prompt files apparaît
+- Sélectionner un prompt file → son contenu est envoyé comme base du prompt
+- Vous ajoutez la partie variable (ce qui change à chaque utilisation)
+
+**Format du fichier** :
+```markdown
+# .github/prompts/mon-template.prompt.md
+
+---
+description: "Texte affiché dans le menu de sélection quand on tape /"
+---
+# Instructions fixes (envoyées à chaque utilisation du template)
+
+Les conventions, le format attendu, les contraintes...
+L'utilisateur ajoutera la partie variable après.
+```
+
+**Cas d'usage** :
+- Créer un endpoint (toujours le même pattern) → `/generate-route`
+- Créer un test (toujours le même format) → `/generate-tests`
+- Créer un composant UI (toujours les mêmes conventions) → `/generate-boosted-component`
 
 #### 🔬 Manipulation — Créer un Prompt File from scratch
 
@@ -612,7 +736,63 @@ pour des catégories de tâches (id, name, color, icon, createdAt)
 
 ---
 
-### 5c. Créer un Custom Agent (.agent.md)
+### 5c. Custom Agents — Les personas spécialisés
+
+#### 📖 Concept
+
+Un **Custom Agent** est un persona Copilot avec des instructions spécialisées et des outils dédiés. Contrairement aux instructions (automatiques), un agent est **sélectionné manuellement** dans le dropdown de Copilot Chat.
+
+**Différence avec Instructions et Prompt Files** :
+- Instructions = toujours actives, pas de choix
+- Prompt Files = 1 seul prompt avec `/nom`, puis c'est fini
+- Agent = TOUTE la conversation utilise ce persona (chaque réponse suit ses règles)
+
+**Où ça apparaît dans VS Code** :
+```
+┌─────────────────────────────────────────────┐
+│  Copilot Chat                                │
+│  ┌───────────────────────────────────┐      │
+│  │ Mode: [Agent ▾]  Agent: [▾ ...]   │      │  ← Dropdown agent ICI
+│  └───────────────────────────────────┘      │
+│                                              │
+│  En cliquant sur le dropdown agent :         │
+│  ┌─────────────────────┐                    │
+│  │ ● Copilot (défaut)  │                    │
+│  │ ○ code-reviewer     │ ← vos agents       │
+│  │ ○ full-review       │                    │
+│  │ ○ qa-tester         │                    │
+│  │ ○ caveman-mode      │                    │
+│  └─────────────────────┘                    │
+└─────────────────────────────────────────────┘
+```
+
+**Format du fichier** :
+```markdown
+# .github/agents/nom-agent.agent.md
+
+---
+description: "Description affichée dans le dropdown"
+tools: ["editFiles", "runTerminalCommand", "codebase", "fetch", "useBrowser"]
+---
+# Nom de l'Agent
+
+Instructions système : qui est l'agent, comment il se comporte,
+quel format de réponse il utilise, sur quoi il se focalise.
+```
+
+**Le champ `tools`** contrôle ce que l'agent PEUT FAIRE :
+
+| Tool | Capacité | Exemple |
+|------|----------|---------|
+| `editFiles` | Créer/modifier des fichiers | Générer du code, corriger un bug |
+| `runTerminalCommand` | Exécuter des commandes shell | `npm test`, `git status` |
+| `codebase` | Chercher dans le code du projet | Trouver les usages d'une fonction |
+| `changes` | Voir le git diff | Analyser les modifications récentes |
+| `fetch` | Faire des requêtes HTTP | Vérifier qu'une API répond |
+| `useBrowser` | Piloter Playwright (si MCP configuré) | Naviguer, cliquer, screenshot |
+
+**Sans `tools`** : l'agent ne peut QUE répondre avec du texte (pas d'actions).
+**Avec `tools`** : l'agent peut AGIR (modifier fichiers, lancer commandes, naviguer).
 
 **Ce que c'est** : Un "persona" Copilot sélectionnable dans le dropdown du Chat avec des instructions spécialisées.
 
@@ -686,43 +866,112 @@ Observer : réponse ultra-courte, style "caveman" (pas de phrases complètes).
 
 ---
 
-### 5d. Custom Skills (Vision Files)
+### 5d. Skills — Les workflows complets automatisés
 
-**Ce que c'est** : Des fichiers qui décrivent des compétences spécialisées que Copilot peut invoquer en mode Agent. Un skill = un ensemble de connaissances + outils que l'agent peut utiliser.
+#### 📖 Concept
 
-#### 🔬 Manipulation — Voir l'effet des skills existants
+Un **Skill** est la combinaison de plusieurs mécanismes pour créer un workflow complet. Ce n'est pas un fichier unique — c'est un **pattern d'assemblage** :
 
-**Étape 1** — Ouvrir `.vscode/mcp.json` (`Ctrl+P` → `mcp.json`). Observer les serveurs MCP configurés = ce sont des **skills externes** donnés à Copilot :
-```json
-{
-  "mcp": {
-    "servers": {
-      "playwright": {
-        "command": "npx",
-        "args": ["@playwright/mcp@latest"]
-      }
-    }
-  }
-}
+```
+┌─────────────────────────────────────────────────────────┐
+│                      SKILL                                │
+│                                                           │
+│  ┌─────────────┐  +  ┌──────────────┐  +  ┌──────────┐ │
+│  │ Prompt File │     │ MCP Server   │     │ Agent    │  │
+│  │ (quoi faire)│     │ (avec quoi)  │     │ (comment)│  │
+│  └─────────────┘     └──────────────┘     └──────────┘  │
+│                                                           │
+│  Exemple : Audit Accessibilité                            │
+│  ┌─────────────┐  +  ┌──────────────┐  +  ┌──────────┐ │
+│  │ audit-      │     │ Playwright   │     │ qa-tester│  │
+│  │ accessibility│     │ (naviguer,   │     │ (format  │  │
+│  │ .prompt.md  │     │  cliquer,    │     │  rapport)│  │
+│  │             │     │  screenshot) │     │          │  │
+│  └─────────────┘     └──────────────┘     └──────────┘  │
+└─────────────────────────────────────────────────────────┘
 ```
 
-**Étape 2** — En mode Agent, taper :
-```
-Quels outils as-tu à disposition ?
-```
-Copilot listera ses outils, y compris ceux du MCP Playwright (navigate, click, screenshot, fill...).
+**Différence avec les autres mécanismes** :
+- Instructions = "comment parler" (style, conventions)
+- Prompt Files = "quoi demander" (template réutilisable)
+- Agents = "qui répond" (persona avec format)
+- MCP = "quels outils" (capacités)
+- **Skills = tout ça assemblé** pour un workflow de bout en bout
 
-**Étape 3** — Vérifier les skills via la commande palette :
+**3 façons de créer un Skill** :
+
+| Méthode | Fichiers | Complexité | Puissance |
+|---------|----------|-----------|-----------|
+| Prompt File seul | `.github/prompts/skill.prompt.md` | ⭐ Simple | Workflow basique |
+| Prompt File + MCP | Prompt + `.vscode/mcp.json` | ⭐⭐ Moyen | Workflow avec actions réelles |
+| Agent + MCP + Instructions | `.agent.md` + MCP + `.instructions.md` | ⭐⭐⭐ Avancé | Workflow multi-passes intelligent |
+
+#### 🔬 Manipulation 1 — Skill basique (Prompt File seul)
+
+Un skill simple = un Prompt File qui décrit un workflow complet.
+
+**Étape 1** — Créer `.github/prompts/generate-crud.prompt.md` :
 ```
-Ctrl+Shift+P → MCP: List Servers
+Ctrl+Shift+P → File: New File → .github/prompts/generate-crud.prompt.md
 ```
-Vous voyez les serveurs connectés et leurs outils disponibles.
 
-#### 🔬 Manipulation — Créer un skill via un Prompt File avancé
+**Étape 2** — Écrire :
+```markdown
+---
+description: "Générer un CRUD complet (service + route + tests)"
+---
+# Skill : Génération CRUD Complète
 
-Un "skill" peut aussi être un Prompt File qui combine instructions + outils + workflow :
+Génère les 3 fichiers pour un nouveau module CRUD :
 
-**Étape 1** — Créer `.github/prompts/audit-accessibility.prompt.md` :
+## 1. Service (src/services/{nom}Service.js)
+- Classe avec Map() in-memory
+- Méthodes : getAll, getById, create, update, delete
+- JSDoc, validation, createdAt/updatedAt
+
+## 2. Route (src/routes/{nom}.js)
+- Express Router
+- Endpoints : GET /, GET /:id, POST /, PUT /:id, DELETE /:id
+- Format réponse { data } / { error }
+- Try/catch + status codes
+
+## 3. Tests (tests/{nom}Service.test.js)
+- Test chaque méthode du service
+- Cas nominaux + cas d'erreur (not found, validation)
+- describe/it, assertions expect()
+
+## Conventions
+- ES Modules (import/export)
+- Même style que les fichiers existants dans src/
+```
+
+**Étape 3** — En mode Agent, taper :
+```
+/generate-crud pour des catégories (id, name, color, icon)
+```
+
+**Étape 4** — Observer : Copilot génère LES 3 FICHIERS d'un coup (service + route + tests), tous cohérents entre eux.
+
+#### 📊 Comment voir l'effet
+
+| Sans skill | Avec skill `/generate-crud` |
+|-----------|----------------------------|
+| 3 prompts séparés (service, route, tests) | 1 seul prompt |
+| Incohérences entre les fichiers | Tout est cohérent |
+| ~3 min, ~2000 tokens total | ~30s, ~800 tokens |
+
+---
+
+#### 🔬 Manipulation 2 — Skill avec MCP (Prompt File + outil externe)
+
+Un skill moyen = un Prompt File qui UTILISE un MCP pour agir dans le monde réel.
+
+**Étape 1** — Le prompt file `audit-accessibility.prompt.md` existe déjà. Ouvrir :
+```
+Ctrl+P → audit-accessibility
+```
+
+**Étape 2** — Observer la structure :
 ```markdown
 ---
 description: "Auditer l'accessibilité d'une page avec Playwright"
@@ -730,40 +979,143 @@ description: "Auditer l'accessibilité d'une page avec Playwright"
 # Audit Accessibilité
 
 Utilise le navigateur Playwright pour auditer l'accessibilité :
-
 1. Naviguer vers http://localhost:3000
 2. Prendre un screenshot
-3. Vérifier :
-   - Tous les boutons ont un aria-label ou un texte visible
-   - Les images ont un attribut alt
-   - Le contraste des couleurs est suffisant (ratio 4.5:1 minimum)
-   - La navigation au clavier fonctionne (tabindex logique)
-   - Les formulaires ont des labels associés
-4. Retourner un rapport au format :
-   - ✅ Conforme / ❌ Non conforme pour chaque critère
-   - Screenshot annoté si possible
+3. Vérifier : aria-labels, alt, contraste, tabindex, labels
+4. Retourner rapport ✅/❌ par critère
 ```
 
-**Étape 2** — En mode Agent, taper :
+**Étape 3** — S'assurer que le MCP Playwright est actif :
+```
+Ctrl+Shift+P → MCP: List Servers → playwright = Ready
+```
+
+**Étape 4** — En mode Agent, taper :
 ```
 /audit-accessibility
 ```
 
-**Étape 3** — Observer : Copilot combine le Prompt File (instructions) + le MCP Playwright (outil) pour exécuter un audit complet.
+**Étape 5** — Observer Copilot :
+1. Lit le prompt file (instructions du workflow)
+2. Utilise le MCP Playwright (outil) pour naviguer
+3. Prend des screenshots
+4. Vérifie les critères sur la page réelle
+5. Retourne un rapport avec résultats réels
 
-#### 📊 Comment voir l'effet
-
-| Sans skill/MCP | Avec skill/MCP |
-|---------------|----------------|
-| Copilot ne peut que générer du code | Copilot EXÉCUTE des actions (naviguer, cliquer, vérifier) |
-| "Voici le code pour tester l'accessibilité…" | "J'ai testé la page, voici les résultats avec screenshots" |
-| Réponse théorique | Réponse basée sur des données réelles |
+**Ce qui se passe VS Code** :
+- Un navigateur Chromium s'ouvre (visible)
+- Copilot affiche "Using tool: browser_navigate", "Using tool: browser_screenshot"
+- Les screenshots apparaissent inline dans le chat
+- Le rapport final liste ✅/❌ basés sur la page RÉELLE
 
 ---
 
-### 5e. Intégration MCP — Configurer from scratch + Playwright
+#### 🔬 Manipulation 3 — Skill avancé (Agent + MCP + Instructions)
 
-**Ce que c'est** : Un serveur MCP (Model Context Protocol) qui donne à Copilot la capacité de piloter un navigateur web réel.
+Le skill le plus puissant = un Agent dédié qui combine persona + outils + contexte.
+
+**Étape 1** — On a déjà l'agent `qa-tester.agent.md` (créé plus tôt). Il combine :
+- **Persona** : testeur QA avec format de rapport
+- **Tools** : `useBrowser` (Playwright), `runTerminalCommand` (terminal)
+- **Contexte** : les instructions projet s'appliquent aussi (conventions Orange Boosted)
+
+**Étape 2** — Sélectionner `qa-tester` dans le dropdown agent.
+
+**Étape 3** — Taper un scénario complexe :
+```
+Teste le workflow complet :
+1. Crée 3 tâches avec des priorités différentes (basse, moyenne, haute)
+2. Vérifie que les badges de priorité ont les bonnes couleurs
+3. Filtre par priorité "haute" — vérifie qu'on ne voit qu'une tâche
+4. Supprime une tâche — vérifie qu'elle disparaît
+5. Vérifie que le compteur de tâches est à jour
+```
+
+**Étape 4** — Observer le skill en action :
+1. Copilot vérifie que le serveur tourne (`runTerminalCommand: npm run dev`)
+2. Ouvre le navigateur (`useBrowser: navigate`)
+3. Crée les 3 tâches (`useBrowser: fill, click`)
+4. Screenshots à chaque étape
+5. Vérifie les couleurs, filtre, supprime
+6. Produit un rapport structuré (persona qa-tester)
+
+**Ce qui fait de cela un SKILL et pas juste un agent** :
+- L'agent seul ne pourrait pas naviguer (il lui faut le MCP)
+- Le MCP seul ne sait pas quoi faire (il lui faut le prompt)
+- Le prompt seul ne peut pas exécuter (il lui faut le mode Agent + tools)
+- **Les 3 ensemble = un skill complet**
+
+---
+
+#### 🔬 Manipulation 4 — Voir les outils disponibles
+
+**Étape 1** — En mode Agent, taper :
+```
+Quels outils as-tu à disposition ? Liste-les avec une description.
+```
+
+**Étape 2** — Copilot listera :
+- Outils built-in : `editFiles`, `runTerminalCommand`, `codebase`, `changes`, `fetch`
+- Outils MCP Playwright : `browser_navigate`, `browser_click`, `browser_fill`, `browser_screenshot`, `browser_hover`, `browser_select`
+- Outils MCP awesome-copilot (si Docker actif) : `search`, `install`
+
+**Étape 3** — Vérifier via la palette :
+```
+Ctrl+Shift+P → MCP: List Servers
+```
+Cliquer sur un serveur → voir la liste de ses outils.
+
+#### 📊 Résumé — Les 3 niveaux de skills
+
+| Niveau | Composants | Exemple | Ce que ça fait |
+|--------|-----------|---------|----------------|
+| Basique | Prompt File | `/generate-crud` | Génère du code structuré |
+| Moyen | Prompt + MCP | `/audit-accessibility` | Exécute dans le monde réel |
+| Avancé | Agent + MCP + Tools | `qa-tester` + Playwright | Workflow multi-étapes intelligent |
+
+---
+
+### 5e. MCP (Model Context Protocol) — Donner des capacités à Copilot
+
+#### 📖 Concept
+
+**MCP** (Model Context Protocol) est un standard qui permet de connecter des **serveurs d'outils** à Copilot. Chaque serveur donne à Copilot de nouvelles CAPACITÉS qu'il n'a pas nativement.
+
+**Analogie** : 
+- Sans MCP → Copilot est un cerveau qui ne peut que parler
+- Avec MCP → Copilot a des bras (Playwright = naviguer), des yeux (screenshot), des mains (cliquer)
+
+**Comment ça fonctionne** :
+```
+┌──────────────────────┐         ┌─────────────────────┐
+│   Copilot Chat       │◀──────▶│  MCP Server          │
+│   (mode Agent)       │  JSON   │  (Playwright)        │
+│                      │  RPC    │                      │
+│   "Navigue vers..."  │────────▶│  Démarre Chromium    │
+│                      │         │  Navigue             │
+│   Résultat + image   │◀────────│  Retourne screenshot │
+└──────────────────────┘         └─────────────────────┘
+```
+
+**Où ça se configure** : `.vscode/mcp.json` (par projet) ou settings utilisateur (global)
+
+**Où ça apparaît dans VS Code** :
+- `Ctrl+Shift+P` → `MCP: List Servers` → liste des serveurs et leur statut
+- En mode Agent, Copilot affiche "Using tool: browser_navigate" quand il appelle un outil MCP
+- Les résultats (screenshots, données) apparaissent inline dans le chat
+
+**Types de MCP servers disponibles** :
+
+| Serveur | Ce qu'il donne à Copilot | Cas d'usage |
+|---------|--------------------------|-------------|
+| **Playwright** | Naviguer, cliquer, remplir, screenshot | Tester l'UI, débugger visuellement |
+| **awesome-copilot** | Chercher/installer des ressources communautaires | Découvrir des instructions/agents |
+| **PostgreSQL/MySQL** | Requêter une base de données | Analyser les données, générer des queries |
+| **GitHub** | Créer issues, PRs, chercher du code | Automatiser le workflow Git |
+| **File System** | Lire/écrire des fichiers hors workspace | Accéder à des fichiers distants |
+| **Docker** | Gérer des containers | DevOps, déploiement |
+
+**Ce que c'est** : Un serveur MCP qui donne à Copilot la capacité de piloter un navigateur web réel.
 
 #### 🔬 Manipulation — Configurer un MCP server pas à pas
 
