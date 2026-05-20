@@ -1145,6 +1145,165 @@ Observer : les instructions de test ne s'appliquent PAS ici (fichier hors du glo
 
 ---
 
+### 🔬 Manipulation 7 — Utiliser des images comme contexte (Vision)
+
+Copilot Chat accepte les images (screenshots, maquettes, diagrammes) comme contexte. Très utile pour reproduire un design ou debugger un problème visuel.
+
+#### Cas 1 — Reproduire un design à partir d'un screenshot
+
+**Étape 1** — Prendre un screenshot d'un composant UI que vous voulez reproduire :
+- `Win+Shift+S` → sélectionner une zone (ex: un formulaire sur un autre site, une maquette Figma)
+- Ou utiliser une image existante (ex: capture d'un design Orange)
+
+**Étape 2** — Dans Copilot Chat, **coller l'image** directement :
+- `Ctrl+V` dans le champ de saisie du chat
+- L'image apparaît en miniature
+
+**Étape 3** — Taper le prompt avec l'image :
+```
+Reproduis ce composant en HTML/CSS en utilisant Orange Boosted 5.3. 
+Utilise les classes Boosted existantes autant que possible.
+Donne-moi le code HTML intégrable dans public/index.html.
+```
+
+**Étape 4** — Observer : Copilot analyse l'image et génère du code qui reproduit le design.
+
+#### Cas 2 — Debugger un problème visuel
+
+**Étape 1** — Ouvrir l'app dans le navigateur (`http://localhost:3000`)
+
+**Étape 2** — Identifier un problème visuel (ou en créer un temporairement : ajouter `style="margin-left: -50px"` sur un élément)
+
+**Étape 3** — Prendre un screenshot du bug : `Win+Shift+S`
+
+**Étape 4** — Coller dans Copilot Chat (`Ctrl+V`) + prompt :
+```
+#file:public/index.html
+Voici un screenshot de la page. Le bouton "Créer" est décalé vers la gauche et sort de son conteneur. Trouve la cause dans le HTML/CSS et corrige.
+```
+
+**Étape 5** — Observer : Copilot voit le problème visuel ET a le code source → propose un fix précis.
+
+#### Cas 3 — Implémenter depuis une maquette/wireframe
+
+**Étape 1** — Utiliser une image de maquette (dessiner rapidement sur papier et prendre en photo, ou utiliser un outil comme Excalidraw)
+
+**Étape 2** — Coller dans Copilot Chat + prompt :
+```
+Voici une maquette pour une page de statistiques. Implémente-la avec :
+- Orange Boosted 5.3 (classes existantes)
+- Chart.js pour les graphiques
+- Données depuis GET /api/analytics/stats
+- Layout responsive (grille Boosted)
+```
+
+#### 📊 Comment voir l'effet
+
+| Sans image | Avec image |
+|-----------|-----------|
+| "Fais un formulaire de login" → design générique | Image d'une maquette → reproduit fidèlement le design |
+| Decrire un bug en mots → Copilot peut mal comprendre | Screenshot du bug → Copilot voit exactement le problème |
+| Plusieurs allers-retours pour ajuster | Résultat correct au 1er tour |
+
+**Formats acceptés** : PNG, JPG, GIF, WebP. Taille max ~20MB.
+
+**Comment attacher** :
+- `Ctrl+V` (coller depuis presse-papier)
+- Drag & drop d'un fichier image dans le chat
+- Cliquer l'icône 📎 (trombone) dans le chat
+
+---
+
+### 🔬 Manipulation 8 — Choisir le bon modèle
+
+Copilot propose plusieurs modèles IA. Chaque modèle a des forces différentes.
+
+#### Comment changer de modèle dans VS Code
+
+**Étape 1** — Ouvrir Copilot Chat (`Ctrl+Alt+I`)
+
+**Étape 2** — En bas du champ de saisie, cliquer sur le **nom du modèle** affiché (ex: "GPT-4o")
+
+**Étape 3** — La liste des modèles disponibles apparaît :
+
+| Modèle | Forces | Quand l'utiliser |
+|--------|--------|-----------------|
+| **GPT-4o** | Rapide, bon en code, vision | Usage général, itérations rapides |
+| **GPT-4o mini** | Ultra-rapide, peu de tokens | Questions simples, complétion inline |
+| **Claude 3.5 Sonnet** | Excellent en raisonnement, code complexe | Architecture, refactoring complexe, longues analyses |
+| **Claude 4 Sonnet** | Meilleur raisonnement, instruction following | Tâches complexes, respect strict des consignes |
+| **o1** | Raisonnement étape par étape | Algorithmes complexes, debugging difficile |
+| **o3-mini** | Raisonnement + rapidité | Bon compromis qualité/vitesse pour la logique |
+| **Gemini 2.5 Pro** | Très grande fenêtre de contexte | Gros fichiers, analyse de projets entiers |
+
+#### 🔬 Manipulation — Comparer les modèles sur le même prompt
+
+**Étape 1** — Sélectionner **GPT-4o**, taper :
+```
+#file:src/services/taskService.js
+Refactore cette classe pour utiliser le pattern Repository avec injection de dépendances, en gardant la compatibilité avec les tests existants. Explique tes choix.
+```
+Noter : tokens, temps de réponse, qualité de l'explication.
+
+**Étape 2** — Nouvelle conversation, sélectionner **Claude 3.5 Sonnet**, même prompt exactement.
+
+**Étape 3** — Nouvelle conversation, sélectionner **o3-mini**, même prompt.
+
+**Étape 4** — Comparer :
+
+#### 📊 Résultats attendus
+
+| Métrique | GPT-4o | Claude 3.5 Sonnet | o3-mini |
+|----------|--------|-------------------|---------|
+| Temps de réponse | ~3-5s | ~5-8s | ~10-15s |
+| Tokens OUT | ~500-700 | ~700-1000 (plus détaillé) | ~400-600 |
+| Qualité explication | ✅ Bonne | ✅✅ Très détaillée | ✅ Concise mais précise |
+| Code compilable | ✅ | ✅ | ✅ |
+| Respect des contraintes | ✅ Bon | ✅✅ Excellent | ✅ Bon |
+
+#### 🔬 Manipulation — Quand le modèle change tout
+
+**Cas 1 — Tâche simple** (favoriser la vitesse) :
+```
+Modèle : GPT-4o mini
+Prompt : Ajoute un champ "dueDate" au type Task dans taskService.js
+```
+→ Rapide, correct, pas besoin de plus.
+
+**Cas 2 — Debug complexe** (favoriser le raisonnement) :
+```
+Modèle : o3-mini ou Claude Sonnet
+Prompt : Les tests de pagination échouent quand limit=0. Analyse pourquoi et propose un fix qui gère aussi limit négatif et limit > total.
+```
+→ Le raisonnement étape par étape trouve le edge case.
+
+**Cas 3 — Gros contexte** (favoriser la fenêtre) :
+```
+Modèle : Gemini 2.5 Pro
+Prompt : #file:src/app.js #file:src/services/taskService.js #file:src/routes/tasks.js #file:src/routes/analytics.js #file:src/utils/validators.js #file:public/js/app.js
+Fais un audit sécurité complet de toute l'application
+```
+→ Gère plus de fichiers en contexte sans troncature.
+
+**Cas 4 — Vision/Image** (favoriser le multimodal) :
+```
+Modèle : GPT-4o (supporte la vision)
+Prompt : [coller screenshot] + "Reproduis ce design"
+```
+
+#### Règles de choix rapide
+
+| Situation | Modèle recommandé |
+|-----------|------------------|
+| Complétion rapide, petite modif | GPT-4o mini |
+| Usage général, code + explications | GPT-4o |
+| Architecture, refactoring, analyse | Claude Sonnet |
+| Algorithmes, raisonnement mathématique | o1 / o3-mini |
+| Très gros fichiers (>5000 lignes) | Gemini 2.5 Pro |
+| Screenshots, maquettes, debug visuel | GPT-4o |
+
+---
+
 ### Récapitulatif — Maîtrise du contexte
 
 | Levier | Action | Impact tokens |
@@ -1156,6 +1315,8 @@ Observer : les instructions de test ne s'appliquent PAS ici (fichier hors du glo
 | Nouvelle conversation | Reset quand le sujet change | Évite l'accumulation |
 | `copilot-instructions.md` | Conventions auto-injectées | +200-400 tokens (utile) |
 | `instructions/*.md` + `applyTo` | Contexte conditionnel par type de fichier | Minimal et ciblé |
+| Images (Vision) | Screenshots, maquettes, diagrammes | Résultat visuel au 1er tour |
+| Choix du modèle | Adapter le modèle à la tâche | Vitesse vs profondeur vs coût |
 | Caveman Mode | Réponses ultra-compactes | -50-70% tokens OUT |
 
 ---
