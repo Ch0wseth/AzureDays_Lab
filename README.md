@@ -1696,6 +1696,403 @@ Teste le scénario suivant :
 
 ---
 
+### 🏆 Démos Avancées — Comparatifs Poussés
+
+Ces démos sont conçues pour prouver de manière irréfutable l'impact de chaque mécanisme. Chaque démo utilise le MÊME prompt de base et compare les résultats selon la configuration active.
+
+---
+
+#### 🔬 COMPARATIF 1 — Instructions : même prompt, 4 configurations différentes
+
+**Le prompt** (identique dans les 4 cas) :
+```
+Crée un composant card pour afficher une tâche avec son titre, sa priorité et sa date de création
+```
+
+**Config A** — Aucune instruction (renommer `.github/copilot-instructions.md` → `.bak`) :
+```powershell
+Rename-Item .github/copilot-instructions.md copilot-instructions.md.bak
+```
+Nouvelle conversation → taper le prompt → **screenshot le résultat** (`Win+Shift+S`)
+
+**Config B** — Instructions globales uniquement (remettre le fichier) :
+```powershell
+Rename-Item .github/copilot-instructions.md.bak copilot-instructions.md
+```
+Nouvelle conversation → même prompt → screenshot
+
+**Config C** — Instructions globales + instruction conditionnelle HTML :
+
+Créer `.github/instructions/html-components.instructions.md` :
+```markdown
+---
+applyTo: "public/**"
+---
+Pour les composants HTML :
+- Utiliser les composants Orange Boosted (pas de CSS custom)
+- Toujours inclure les attributs d'accessibilité (aria-label, role)
+- Responsive : utiliser la grille Boosted (col-sm, col-md, col-lg)
+- Dark mode : utiliser les classes bg-dark, text-white
+- Animations : utiliser les transitions Boosted (fade, collapse)
+```
+Ouvrir `public/index.html` comme fichier actif → nouvelle conversation → même prompt → screenshot
+
+**Config D** — Tout + Caveman Mode activé :
+```powershell
+Rename-Item ".github/instructions/caveman-mode.instructions.md.disabled" "caveman-mode.instructions.md"
+```
+Nouvelle conversation → même prompt → screenshot
+
+**Étape finale** — Comparer les 4 screenshots côte à côte :
+
+#### 📊 Grille de comparaison
+
+| Critère | A (rien) | B (global) | C (global + HTML) | D (+ caveman) |
+|---------|----------|-----------|-------------------|---------------|
+| **Framework CSS** | Bootstrap/Tailwind/rien | Orange Boosted | Orange Boosted | Orange Boosted |
+| **Langue** | Anglais | Français | Français | Français |
+| **Dark mode** | ❌ | ✅ | ✅✅ (classes explicites) | ✅ |
+| **Accessibilité** | ❌ | ❌ (pas demandé) | ✅ (aria-labels) | ✅ |
+| **Responsive** | Aléatoire | Aléatoire | ✅ (grille Boosted) | ✅ |
+| **Longueur réponse** | ~30 lignes | ~30 lignes | ~35 lignes | ~10-15 lignes |
+| **Tokens OUT** | ~400 | ~400 | ~450 | ~150-200 |
+| **Utilisable tel quel** | ❌ Refaire | ⚠️ Ajuster | ✅ Presque parfait | ✅ Compact mais bon |
+
+**⚠️ Remettre la config normale après** :
+```powershell
+Rename-Item ".github/instructions/caveman-mode.instructions.md" "caveman-mode.instructions.md.disabled"
+```
+
+---
+
+#### 🔬 COMPARATIF 2 — Prompt Files : avec vs sans template, sur 3 créations successives
+
+**Objectif** : Prouver que les Prompt Files garantissent la cohérence quand on crée plusieurs éléments similaires.
+
+**Scénario** : Créer 3 routes API (users, categories, comments) et vérifier la cohérence.
+
+##### Sans Prompt File (3 prompts manuels)
+
+**Tour 1** — Nouvelle conversation :
+```
+Crée une route Express pour /api/users avec CRUD complet. ES Modules, JSDoc, try/catch, format { data } ou { error }.
+```
+→ Copier le résultat dans un fichier texte temporaire.
+
+**Tour 2** — Nouvelle conversation :
+```
+Crée une route Express pour /api/categories. Mêmes conventions que pour users.
+```
+→ Copier le résultat.
+
+**Tour 3** — Nouvelle conversation :
+```
+Crée une route Express pour /api/comments avec CRUD.
+```
+→ Copier le résultat.
+
+**Analyser** : Comparer les 3 fichiers. Chercher les incohérences :
+- Noms de variables différents ?
+- Format de réponse différent ?
+- Gestion d'erreur différente ?
+- JSDoc présent partout ?
+- Status codes cohérents ?
+
+##### Avec Prompt File `/generate-route` (3 invocations)
+
+**Tour 1** :
+```
+/generate-route pour /api/users — CRUD utilisateurs (id, email, name, role)
+```
+
+**Tour 2** :
+```
+/generate-route pour /api/categories — CRUD catégories (id, name, color, icon)
+```
+
+**Tour 3** :
+```
+/generate-route pour /api/comments — CRUD commentaires (id, taskId, author, text, createdAt)
+```
+
+**Analyser** : Les 3 fichiers suivent exactement le même pattern.
+
+#### 📊 Grille de comparaison
+
+| Critère | Sans Prompt File | Avec /generate-route |
+|---------|-----------------|---------------------|
+| **Format réponse** | Variable (parfois `res.json(data)`, parfois `res.send({data})`) | Identique partout |
+| **Noms variables** | `user`/`users` vs `item`/`items` | Pattern identique |
+| **Error handling** | Parfois `try/catch`, parfois `.catch()` | Toujours `try/catch` |
+| **JSDoc** | Absent au tour 3 (oublié) | Toujours présent |
+| **Status codes** | 200 ou 201 pour création ? | Toujours 201 pour POST |
+| **Temps par route** | 30s de prompt + vérification | 5s de prompt |
+| **Tokens utilisateur** | ~80 tokens × 3 = 240 | ~15 tokens × 3 = 45 |
+| **Cohérence** | ⚠️ 60-70% | ✅ 100% |
+
+---
+
+#### 🔬 COMPARATIF 3 — Agents : même question, 4 personas différents
+
+**Le fichier cible** : `src/routes/tasks.js`
+
+**Le prompt** (identique dans les 4 cas) :
+```
+Analyse #file:src/routes/tasks.js et donne-moi ton avis
+```
+
+##### Test A — Agent par défaut (Copilot)
+- Dropdown agent → `Copilot`
+- Taper le prompt
+- **Observer** : réponse généraliste, explique ce que fait le fichier, suggestions variées
+
+##### Test B — Agent `code-reviewer`
+- Dropdown agent → `code-reviewer`
+- Même prompt
+- **Observer** : format 🔴🟡🟢, focus sécurité et performance
+
+##### Test C — Agent `caveman-mode`
+- Dropdown agent → `caveman-mode`
+- Même prompt
+- **Observer** : réponse ultra-courte, mots-clés, pas de phrases
+
+##### Test D — Agent `full-review`
+- Dropdown agent → `full-review`
+- Même prompt
+- **Observer** : 3 passes (code, tests, a11y), lance npm test, rapport structuré
+
+#### 📊 Grille de comparaison
+
+| Critère | Copilot (défaut) | code-reviewer | caveman-mode | full-review |
+|---------|-----------------|---------------|--------------|-------------|
+| **Longueur** | ~20-30 lignes | ~15-20 lignes | ~5-8 lignes | ~40-50 lignes |
+| **Tokens OUT** | ~400-600 | ~300-400 | ~80-150 | ~800-1200 |
+| **Focus** | Généraliste | Sécurité + Perf | Minimal | Complet (code+tests+a11y) |
+| **Actionnable** | ⚠️ Suggestions vagues | ✅ Fixes précis | ⚠️ Mots-clés | ✅ Plan d'action |
+| **Exécute des actions** | ❌ | ❌ | ❌ | ✅ (lance tests) |
+| **Format** | Paragraphes | 🔴🟡🟢 structuré | Télégraphique | Rapport 3 sections |
+| **Idéal pour** | Comprendre | Pré-commit review | Économiser tokens | Review complète |
+
+**Démonstration visuelle** : Mettre les 4 réponses côte à côte (split view ou 4 screenshots).
+
+---
+
+#### 🔬 COMPARATIF 4 — MCP : avec vs sans, le même scénario de test
+
+**Le prompt** (identique) :
+```
+Vérifie que quand on crée une tâche avec priorité "haute", le badge s'affiche en rouge dans l'interface.
+```
+
+##### Test A — Sans MCP (Playwright désactivé)
+
+**Étape 1** — Désactiver Playwright :
+```
+Ctrl+Shift+P → MCP: Stop Server → playwright
+```
+
+**Étape 2** — Mode Agent, taper le prompt.
+
+**Résultat attendu** : Copilot va GÉNÉRER du code Playwright :
+```javascript
+// "Voici le code pour vérifier ça :"
+const { test, expect } = require('@playwright/test');
+test('badge rouge pour priorité haute', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+  // ... du code que VOUS devez copier et exécuter
+});
+```
+→ Il donne du code. Vous devez l'exécuter vous-même. Pas de preuve visuelle.
+
+##### Test B — Avec MCP (Playwright activé)
+
+**Étape 1** — Réactiver Playwright :
+```
+Ctrl+Shift+P → MCP: Start Server → playwright
+```
+
+**Étape 2** — Mode Agent, même prompt exactement.
+
+**Résultat attendu** : Copilot va EXÉCUTER le test en live :
+```
+Using tool: browser_navigate → http://localhost:3000
+Using tool: browser_click → "Nouvelle Tâche"
+Using tool: browser_fill → title: "Test priorité"
+Using tool: browser_select → priority: "haute"
+Using tool: browser_click → "Créer"
+Using tool: browser_screenshot → [image inline]
+
+✅ Vérifié : Le badge priorité "Haute" est bien affiché avec la classe 
+"badge bg-danger" (rouge). Voici le screenshot comme preuve.
+```
+→ Il FAIT le test, prend un screenshot, et vous donne la PREUVE.
+
+#### 📊 Grille de comparaison
+
+| Critère | Sans MCP | Avec MCP |
+|---------|----------|----------|
+| **Ce que Copilot fait** | Génère du code de test | Exécute le test en live |
+| **Preuve visuelle** | ❌ Aucune | ✅ Screenshot inline |
+| **Effort pour vous** | Copier le code, l'exécuter, vérifier | 0 — tout est fait |
+| **Temps total** | 2-5 min (copier + lancer + lire) | 30 sec (Copilot fait tout) |
+| **Fiabilité** | ⚠️ Le code peut avoir des erreurs | ✅ Copilot adapte si ça échoue |
+| **Tokens** | ~300 OUT (code) | ~500 OUT (actions + résultat) mais 0 effort |
+
+---
+
+#### 🔬 COMPARATIF 5 — Skills : 3 niveaux de complexité pour la même tâche
+
+**La tâche** : "Ajouter un module 'tags' à l'application (service + route + tests + vérification que ça marche)"
+
+##### Niveau 0 — Aucun skill (tout à la main)
+
+**Tour 1** :
+```
+Crée un service de tags dans src/services/tagService.js avec CRUD
+```
+Vérifier, ajuster, sauvegarder.
+
+**Tour 2** :
+```
+Crée les routes pour les tags dans src/routes/tags.js
+```
+Vérifier que c'est cohérent avec le service.
+
+**Tour 3** :
+```
+Crée les tests dans tests/tagService.test.js
+```
+Vérifier, corriger les imports.
+
+**Tour 4** :
+```
+Intègre les routes dans src/app.js
+```
+
+**Tour 5** :
+```
+@terminal Lance les tests pour vérifier que tout passe
+```
+Si ça échoue : 2-3 tours de debug.
+
+**Total** : 5-8 tours, ~15 min, ~4000-6000 tokens
+
+##### Niveau 1 — Skill basique (`/generate-crud`)
+
+**Tour 1** :
+```
+/generate-crud pour des tags (id, name, color, taskIds[])
+```
+Copilot génère les 3 fichiers d'un coup.
+
+**Tour 2** :
+```
+Intègre la route tags dans src/app.js et lance les tests
+```
+
+**Total** : 2 tours, ~3 min, ~1500-2000 tokens
+
+##### Niveau 2 — Skill avancé (Agent `full-review` + MCP)
+
+**Tour 1** — Sélectionner l'agent `full-review`, taper :
+```
+Ajoute un module complet de gestion des tags :
+- Service CRUD (src/services/tagService.js)
+- Routes REST (src/routes/tags.js) 
+- Tests (tests/tagService.test.js)
+- Intégration dans app.js
+- Lance les tests pour confirmer que tout passe
+- Vérifie dans le navigateur que l'app démarre sans erreur
+```
+
+Copilot fait TOUT :
+1. Crée les 3 fichiers
+2. Modifie app.js
+3. Lance `npm test`
+4. Ouvre le navigateur pour vérifier
+5. Rapporte le résultat
+
+**Total** : 1 tour, ~1 min, ~2500 tokens (plus de tokens OUT mais ZÉRO effort humain)
+
+#### 📊 Grille de comparaison
+
+| Critère | Sans skill (manuel) | Skill basique (/generate-crud) | Skill avancé (Agent+MCP) |
+|---------|--------------------|---------------------------------|--------------------------|
+| **Tours de conversation** | 5-8 | 2 | 1 |
+| **Temps humain** | 15 min | 3 min | 1 min |
+| **Tokens totaux** | 4000-6000 | 1500-2000 | 2500 |
+| **Intervention manuelle** | Beaucoup (vérifier, corriger, intégrer) | Peu (intégrer + tester) | Aucune |
+| **Risque d'incohérence** | ⚠️ Élevé (3 fichiers séparés) | ✅ Faible (template unifié) | ✅ Très faible (vérifié auto) |
+| **Preuve que ça marche** | ❌ Vous devez tester | ⚠️ Vous lancez les tests | ✅ Copilot teste + screenshot |
+| **Impressionnant en démo** | 😐 | 🙂 | 🤯 |
+
+---
+
+#### 🔬 COMPARATIF 6 — La démonstration "WOW" — Tout assemblé
+
+**Scénario final** : Montrer un workflow complet qui utilise TOUS les mécanismes en 1 seul prompt.
+
+**Pré-requis** :
+- ✅ Instructions projet actives (`.github/copilot-instructions.md`)
+- ✅ Instruction conditionnelle tests (`.github/instructions/tests.instructions.md`)
+- ✅ MCP Playwright actif (`MCP: List Servers` → Ready)
+- ✅ Agent `qa-tester` disponible
+- ✅ App qui tourne (`npm run dev`)
+
+**Étape 1** — Sélectionner l'agent `qa-tester` dans le dropdown.
+
+**Étape 2** — Taper ce prompt unique :
+```
+Ajoute un système de tags aux tâches :
+
+1. Modifie taskService.js pour supporter un champ tags (array de strings)
+2. Ajoute les endpoints : POST /api/tasks/:id/tags et DELETE /api/tasks/:id/tags/:tag
+3. Modifie le frontend pour afficher les tags comme des badges Boosted
+4. Lance les tests pour vérifier la non-régression
+5. Teste dans le navigateur :
+   - Crée une tâche
+   - Ajoute 2 tags
+   - Vérifie qu'ils s'affichent correctement
+   - Screenshot final
+```
+
+**Étape 3** — Observer Copilot orchestrer TOUT :
+
+| Étape | Mécanisme utilisé | Ce qui se passe visuellement |
+|-------|-------------------|------------------------------|
+| Modifier taskService | Instructions projet (ES Modules, JSDoc) | Fichier modifié dans l'éditeur |
+| Créer endpoints | Instruction conditionnelle routes (format {data}) | Nouveau code dans tasks.js |
+| Frontend badges | Instructions Boosted (classes Orange) | Modification index.html |
+| Lancer tests | Tool `runTerminalCommand` | Terminal s'active, output visible |
+| Navigateur | Tool `useBrowser` (MCP Playwright) | Chromium s'ouvre, actions visibles |
+| Screenshot | Tool `browser_screenshot` | Image inline dans le chat |
+
+**Résultat en 1 seul prompt** :
+- ✅ Code modifié (3 fichiers) suivant les conventions du projet
+- ✅ Tests passés (visible dans le terminal)
+- ✅ Vérification visuelle (screenshot dans le chat)
+- ✅ Tout cohérent (grâce aux instructions)
+- ✅ Format compact (si caveman activé)
+
+**Ce qui aurait pris 20 min manuellement est fait en ~2 min par un seul prompt.**
+
+---
+
+#### 📊 Tableau final — Impact cumulé de tous les mécanismes
+
+| Configuration | Tokens/prompt (moyenne) | Qualité 1er coup | Cohérence projet | Actions auto |
+|--------------|------------------------|-------------------|------------------|-------------|
+| Copilot nu (rien configuré) | ~800 IN + 500 OUT | ⭐⭐ | ❌ | ❌ |
+| + Instructions projet | ~1000 IN + 500 OUT | ⭐⭐⭐ | ✅ | ❌ |
+| + Instructions cond. | ~1100 IN + 500 OUT | ⭐⭐⭐⭐ | ✅✅ | ❌ |
+| + Prompt Files | ~300 IN + 500 OUT | ⭐⭐⭐⭐ | ✅✅ | ❌ |
+| + Custom Agent | ~1100 IN + 300 OUT | ⭐⭐⭐⭐⭐ | ✅✅ | ❌ |
+| + MCP | ~1100 IN + 600 OUT | ⭐⭐⭐⭐⭐ | ✅✅ | ✅ |
+| **TOUT combiné** | ~1200 IN + 400 OUT | ⭐⭐⭐⭐⭐ | ✅✅✅ | ✅✅ |
+| **+ Caveman Mode** | ~1200 IN + **150 OUT** | ⭐⭐⭐⭐⭐ | ✅✅✅ | ✅✅ |
+
+---
+
 ### 5h. Résumé — Quoi utiliser quand
 
 | Outil | Fichier | Quand l'utiliser | Effet |
