@@ -288,8 +288,6 @@ Montrer que Copilot génère de la documentation JSDoc riche et précise.
 
 **Méthode 1 — Prompt dans le chat** :
 
-> ⚠️ **Note** : La commande `/doc` a été dépréciée dans les versions récentes de Copilot Chat (Slash Commands 2.0). Utilisez un prompt direct à la place.
-
 1. **Ouvrir** `src/utils/validators.js`
 2. **Sélectionner** la fonction `sanitizeInput` (lignes 19-27 environ)
 3. **Ouvrir** Copilot Chat : `Ctrl+Alt+I`
@@ -3371,12 +3369,11 @@ Noter les tokens IN + OUT.
 | Tokens OUT | Similaire | Similaire mais mieux structuré |
 | Qualité | Variable | Constante (prompt interne testé) |
 
-**Autres commandes à tester** :
+**Autres commandes `/` disponibles dans VS Code** :
 - Sélectionner une fonction → "Documente cette fonction avec JSDoc"
-- Sélectionner du code → `/explain` vs "Explique ce code"
-- Sélectionner un bug → `/fix` vs "Corrige ce bug"
-
-> ⚠️ **Note** : Certaines commandes `/` historiques (`/doc`, `/explain`, `/fix`) ont été dépréciées dans les versions récentes (Slash Commands 2.0). Si elles n'apparaissent pas quand vous tapez `/`, utilisez directement un prompt en langage naturel.
+- Sélectionner du code → `/explain`
+- Sélectionner un bug → `/fix`
+- Trouver un test cassé → `/fixTestFailure`
 
 ---
 
