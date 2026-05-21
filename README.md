@@ -29,6 +29,8 @@
 
 ## 📋 Pré-requis
 
+> **💻 Note OS** — Les commandes terminal de ce README utilisent **PowerShell** (défaut Windows). Si vous êtes sur **macOS/Linux**, remplacez `Rename-Item A B` par `mv A B` et `Remove-Item A` par `rm A`. Les commandes `npm`, `git`, `node` et `npx` sont identiques sur tous les OS.
+
 ### Outils à installer AVANT la lab
 
 | Outil | Version min. | Pourquoi | Comment vérifier |
@@ -130,6 +132,8 @@ Ouvrir les settings (`Ctrl+,`) → cliquer sur l'icône `{}` en haut à droite (
   "chat.experimental.showTokenCount": true
 }
 ```
+
+> ⚠️ **Note** : Ces settings sont **expérimentaux** et peuvent être renommés ou supprimés selon les versions de l'extension Copilot. Si l'un d'eux n'est pas reconnu (souligné en jaune dans settings.json), supprimez-le — le compteur de tokens reste visible dans le panneau Output (`Ctrl+Shift+U` → `GitHub Copilot Chat`).
 
 ### Vérifier que les MCP servers sont détectés
 
@@ -513,7 +517,7 @@ Avant de commencer, voici ce que chaque mécanisme fait et comment il se matéri
 | Instructions projet | `.github/copilot-instructions.md` | Automatique | Toutes les requêtes |
 | Instructions conditionnelles | `.github/instructions/*.md` | Automatique si glob matche | Fichiers spécifiques |
 | Prompt Files | `.github/prompts/*.prompt.md` | Manuelle (`/nom`) | 1 requête |
-| Custom Agents | `.github/agents/*.agent.md` | Manuelle (dropdown) | Toute la conversation |
+| Custom Agents | `.github/agents/*.agent.md` | Manuelle (dropdown ou `@nom`) | Toute la conversation |
 | MCP Servers | `.vscode/mcp.json` | Automatique (mode Agent) | Ajoute des outils |
 | Skills | Agent + MCP + Prompt combinés | Manuelle | Workflow complet |
 
@@ -586,8 +590,11 @@ This is a JavaScript demo application using **Orange Boosted 5.3**...
 
 **Étape 3** — Renommer temporairement le fichier pour le désactiver :
 ```powershell
-# Terminal VS Code (Ctrl+`)
+# Windows (PowerShell)
 Rename-Item .github/copilot-instructions.md copilot-instructions.md.bak
+
+# macOS / Linux (bash)
+# mv .github/copilot-instructions.md .github/copilot-instructions.md.bak
 ```
 
 **Étape 4** — Nouvelle conversation (`+`), même prompt :
@@ -606,7 +613,11 @@ Crée un composant HTML pour un message de succès quand une tâche est créée
 
 **Étape 6** — Remettre le fichier :
 ```powershell
+# Windows (PowerShell)
 Rename-Item .github/copilot-instructions.md.bak copilot-instructions.md
+
+# macOS / Linux (bash)
+# mv .github/copilot-instructions.md.bak .github/copilot-instructions.md
 ```
 
 #### 🔬 Manipulation — Créer une instruction conditionnelle from scratch
@@ -800,7 +811,9 @@ quel format de réponse il utilise, sur quoi il se focalise.
 
 #### 🔬 Manipulation — Créer un agent from scratch
 
-**Étape 1** — Créer `.github/agents/code-reviewer.agent.md` :
+> ℹ️ **Note** : Le fichier `code-reviewer.agent.md` existe déjà dans le repo. Pour cette manipulation, vous pouvez l'**ouvrir et observer** son contenu, ou le supprimer d'abord pour le recréer vous-même.
+
+**Étape 1** — Ouvrir (ou créer) `.github/agents/code-reviewer.agent.md` :
 ```
 Ctrl+Shift+P → File: New File → .github/agents/code-reviewer.agent.md
 ```
@@ -1285,6 +1298,8 @@ Si Docker n'est pas installé, passer à l'alternative sans Docker (étape 7).
 
 **Étape 4** — Sauvegarder (`Ctrl+S`). VS Code détecte le nouveau serveur.
 
+> ⚠️ **Attention** : L'image Docker `ghcr.io/microsoft/mcp-dotnet-samples/awesome-copilot:latest` est un sample communautaire qui peut ne plus être maintenu ou disponible. Si le `docker pull` échoue, passez directement à l'[alternative sans Docker](#-alternative-sans-docker--installation-manuelle-depuis-github) ci-dessous.
+
 **Étape 5** — Vérifier :
 ```
 Ctrl+Shift+P → MCP: List Servers
@@ -1717,10 +1732,13 @@ Crée un composant card pour afficher une tâche avec son titre, sa priorité et
 
 ##### Config A — Aucune instruction
 
-**Étape 1** — Ouvrir le terminal VS Code (`Ctrl+ù`) et désactiver les instructions :
+**Étape 1** — Ouvrir le terminal VS Code (`` Ctrl+` `` ou `Ctrl+ù` sur clavier AZERTY) et désactiver les instructions :
 ```powershell
-cd C:\chemin\vers\le\projet
+# Windows (PowerShell)
 Rename-Item .github/copilot-instructions.md copilot-instructions.md.bak
+
+# macOS / Linux (bash)
+# mv .github/copilot-instructions.md .github/copilot-instructions.md.bak
 ```
 
 **Étape 2** — Ouvrir Copilot Chat (`Ctrl+Alt+I`)
@@ -1747,7 +1765,7 @@ Crée un composant card pour afficher une tâche avec son titre, sa priorité et
 ```
 → Bootstrap vanilla, anglais, pas de dark mode, pas d'accessibilité
 
-**Étape 6** — Faire un screenshot de la réponse : `Win+Shift+S` → sélectionner la zone → coller dans un document
+**Étape 6** — Faire un screenshot de la réponse : `Win+Shift+S` (Windows) / `Cmd+Shift+4` (macOS) → sélectionner la zone → coller dans un document
 
 **Étape 7** — Dans le panneau Output, noter :
 - `request token count: ____` (tokens IN)
@@ -1759,7 +1777,11 @@ Crée un composant card pour afficher une tâche avec son titre, sa priorité et
 
 **Étape 1** — Remettre les instructions :
 ```powershell
+# Windows (PowerShell)
 Rename-Item .github/copilot-instructions.md.bak copilot-instructions.md
+
+# macOS / Linux (bash)
+# mv .github/copilot-instructions.md.bak .github/copilot-instructions.md
 ```
 
 **Étape 2** — Dans Copilot Chat, cliquer `+` (NOUVELLE conversation — important sinon le cache peut interférer)
@@ -1860,7 +1882,11 @@ Crée un composant card pour afficher une tâche avec son titre, sa priorité et
 
 **Étape 1** — Activer le caveman mode :
 ```powershell
+# Windows (PowerShell)
 Rename-Item ".github/instructions/caveman-mode.instructions.md.disabled" ".github/instructions/caveman-mode.instructions.md"
+
+# macOS / Linux (bash)
+# mv .github/instructions/caveman-mode.instructions.md.disabled .github/instructions/caveman-mode.instructions.md
 ```
 
 **Étape 2** — Nouvelle conversation (`+`), même prompt :
@@ -1889,7 +1915,11 @@ Crée un composant card pour afficher une tâche avec son titre, sa priorité et
 
 **Étape 5** — **IMPORTANT : Remettre la config normale** :
 ```powershell
+# Windows (PowerShell)
 Rename-Item ".github/instructions/caveman-mode.instructions.md" ".github/instructions/caveman-mode.instructions.md.disabled"
+
+# macOS / Linux (bash)
+# mv .github/instructions/caveman-mode.instructions.md .github/instructions/caveman-mode.instructions.md.disabled
 ```
 
 ---
@@ -3550,7 +3580,7 @@ Prouver concrètement qu'on peut réduire de 50-70% la consommation de tokens sa
 Renommer le fichier pour l'activer :
 ```powershell
 # Windows (PowerShell) :
-Rename-Item ".github/instructions/caveman-mode.instructions.md.disabled" "caveman-mode.instructions.md"
+Rename-Item ".github/instructions/caveman-mode.instructions.md.disabled" ".github/instructions/caveman-mode.instructions.md"
 
 # Mac/Linux :
 # mv .github/instructions/caveman-mode.instructions.md.disabled .github/instructions/caveman-mode.instructions.md
