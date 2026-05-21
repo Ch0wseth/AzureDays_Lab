@@ -172,7 +172,7 @@ Remplir ce tableau **à chaque étape** de la lab :
 |---|-------|-------------|:---------:|:----------:|:-----:|-------------|
 | 1 | Génération code | _(commentaire JSDoc)_ | | | | Baseline |
 | 2 | Génération tests | `/tests #file:src/services/taskService.js` | | | | |
-| 3 | Génération docs | `/doc` sur sanitizeInput | | | | |
+| 3 | Génération docs | Prompt JSDoc sur sanitizeInput | | | | |
 | 4 | Mode Ask | `Explique le filtrage dans getTasks()...` | | | | **Référence pour comparer** |
 | 5 | Mode Edit | `Ajoute validation description max 500...` | | | | |
 | 6 | Mode Agent | `Ajoute un système de catégories...` | | | | Agent = plus de tokens |
@@ -286,7 +286,9 @@ Montrer que Copilot génère de la documentation JSDoc riche et précise.
 
 ### 📝 Modus Operandi
 
-**Méthode 1 — Commande /doc dans le chat** :
+**Méthode 1 — Prompt dans le chat** :
+
+> ⚠️ **Note** : La commande `/doc` a été dépréciée dans les versions récentes de Copilot Chat (Slash Commands 2.0). Utilisez un prompt direct à la place.
 
 1. **Ouvrir** `src/utils/validators.js`
 2. **Sélectionner** la fonction `sanitizeInput` (lignes 19-27 environ)
@@ -294,7 +296,7 @@ Montrer que Copilot génère de la documentation JSDoc riche et précise.
 4. **Taper exactement** :
 
 ```
-/doc Génère la documentation JSDoc complète avec des exemples d'usage pour cette fonction
+Génère la documentation JSDoc complète avec des exemples d'usage pour cette fonction
 ```
 
 5. **Montrer** : Copilot génère un JSDoc enrichi avec `@example`
@@ -3370,9 +3372,11 @@ Noter les tokens IN + OUT.
 | Qualité | Variable | Constante (prompt interne testé) |
 
 **Autres commandes à tester** :
-- Sélectionner une fonction → `/doc` vs "Documente cette fonction"
+- Sélectionner une fonction → "Documente cette fonction avec JSDoc"
 - Sélectionner du code → `/explain` vs "Explique ce code"
 - Sélectionner un bug → `/fix` vs "Corrige ce bug"
+
+> ⚠️ **Note** : Certaines commandes `/` historiques (`/doc`, `/explain`, `/fix`) ont été dépréciées dans les versions récentes (Slash Commands 2.0). Si elles n'apparaissent pas quand vous tapez `/`, utilisez directement un prompt en langage naturel.
 
 ---
 
@@ -3547,7 +3551,7 @@ Pour voir l'impact cumulé de toutes les pratiques, faire cette manipulation :
 | 4 | Listes structurées | Phrase vs liste numérotée | Éléments oubliés dans la réponse |
 | 5 | Référencer l'existant | Sans vs avec #file: référence | Cohérence du code (diff visuel) |
 | 6 | Réponse minimale | Avec vs sans "code uniquement" | Tokens OUT (-60-75%) |
-| 7 | Commandes `/` | Prompt écrit vs /tests, /doc | Tokens IN + qualité constante |
+| 7 | Commandes `/` | Prompt écrit vs /tests | Tokens IN + qualité constante |
 | 8 | Itérer | Monolithe vs 3 petits tours | Bugs + tokens corrections |
 | 9 | Préciser la techno | Ambigu vs contraint | Tours de clarification évités |
 | 10 | Prompt Files | Manuel vs /generate-route | Tokens IN sur 10 utilisations |
@@ -3898,7 +3902,7 @@ copilot-demo-orange/
 [ ] À CHAQUE ÉTAPE : noter tokens IN + OUT dans le tableau
 [ ] Lab 1 — Génération code        → categoryService.js créé
 [ ] Lab 2 — Génération tests       → /tests + prompt file
-[ ] Lab 3 — Génération docs        → /doc + /** inline
+[ ] Lab 3 — Génération docs        → prompt JSDoc + /** inline
 [ ] Lab 4 — Modes Ask/Edit/Agent   → 3 modes montrés
 [ ] Lab 5 — Personnalisation       → instructions, prompts, MCP
 [ ] Lab 6 — Gestion du contexte   → avant/après tokens IN mesurés
