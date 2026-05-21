@@ -44,7 +44,7 @@ for (const file of rootFiles) {
 const categoryService = join(ROOT, 'src', 'services', 'categoryService.js');
 if (existsSync(categoryService)) {
   unlinkSync(categoryService);
-  actions.push('✅ categoryService.js supprimé (créé pendant démo 1)');
+  actions.push('✅ categoryService.js supprimé (créé pendant lab 1)');
 }
 
 // 5. Remove any html-components instruction created during comparatif 1
@@ -63,7 +63,7 @@ try {
 }
 
 // Summary
-console.log('\n🔄 Reset démo terminé :\n');
+console.log('\n🔄 Reset lab terminé :\n');
 if (actions.length === 0) {
   console.log('   Rien à faire — tout est déjà en état initial.');
 } else {

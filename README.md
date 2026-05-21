@@ -1,6 +1,6 @@
 # 🤖 GitHub Copilot Demo — Orange Boosted
 
-> **Guide 100% reproductible** — Suivez ce README pas à pas pour réaliser la démo complète.
+> **Guide 100% reproductible** — Suivez ce README pas à pas pour réaliser la lab complète.
 > Chaque étape indique **exactement** ce qu'il faut faire, taper, et observer.
 
 ---
@@ -10,32 +10,32 @@
 1. [Pré-requis](#-pré-requis)
 2. [Installation pas à pas](#-installation-pas-à-pas)
 3. [Configuration VS Code](#-configuration-vs-code)
-4. [Suivi des tokens](#-suivi-des-tokens-tout-au-long-de-la-démo)
-5. [DÉMO 1 — Génération de code](#-démo-1--génération-de-code)
-6. [DÉMO 2 — Génération de tests](#-démo-2--génération-de-tests)
-7. [DÉMO 3 — Génération de documentation](#-démo-3--génération-de-documentation)
-8. [DÉMO 4 — Modes Copilot (Ask, Edit, Agent)](#-démo-4--modes-copilot-ask-edit-agent)
-9. [DÉMO 5 — Custom Agents, Prompts, Instructions, Skills & MCP](#-démo-5--custom-agents-prompts-instructions-skills--mcp)
-10. [DÉMO 6 — Gestion du Contexte](#-démo-6--gestion-du-contexte-influence-directe-sur-la-qualité-et-les-tokens)
-11. [DÉMO 7 — Bonnes Pratiques de Prompting](#-démo-7--bonnes-pratiques-de-prompting-avantaprès-mesurable)
-12. [DÉMO 8 — Optimisation tokens (Caveman Mode)](#-démo-8--optimisation-des-tokens-caveman-mode)
+4. [Suivi des tokens](#-suivi-des-tokens-tout-au-long-de-la-lab)
+5. [LAB 1 — Génération de code](#-lab-1--génération-de-code)
+6. [LAB 2 — Génération de tests](#-lab-2--génération-de-tests)
+7. [LAB 3 — Génération de documentation](#-lab-3--génération-de-documentation)
+8. [LAB 4 — Modes Copilot (Ask, Edit, Agent)](#-lab-4--modes-copilot-ask-edit-agent)
+9. [LAB 5 — Custom Agents, Prompts, Instructions, Skills & MCP](#-lab-5--custom-agents-prompts-instructions-skills--mcp)
+10. [LAB 6 — Gestion du Contexte](#-lab-6--gestion-du-contexte-influence-directe-sur-la-qualité-et-les-tokens)
+11. [LAB 7 — Bonnes Pratiques de Prompting](#-lab-7--bonnes-pratiques-de-prompting-avantaprès-mesurable)
+12. [LAB 8 — Optimisation tokens (Caveman Mode)](#-lab-8--optimisation-des-tokens-caveman-mode)
 13. [Structure du projet](#-structure-du-projet)
 14. [Checklist Jour-J](#-checklist-jour-j)
 15. [Ressources](#-ressources)
 16. [FAQ / Troubleshooting](#-faq--troubleshooting)
-17. [Reproduire la démo — Guide express](#-reproduire-la-démo--guide-express-5-min)
+17. [Reproduire la lab — Guide express](#-reproduire-la-lab--guide-express-5-min)
 
 ---
 
 ## 📋 Pré-requis
 
-### Outils à installer AVANT la démo
+### Outils à installer AVANT la lab
 
 | Outil | Version min. | Pourquoi | Comment vérifier |
 |-------|:---:|---------|---------|
 | Node.js | 20+ | Runtime de l'app | `node --version` |
 | npm | 10+ | Gestionnaire de paquets | `npm --version` |
-| VS Code | 1.100+ | IDE de la démo | `code --version` |
+| VS Code | 1.100+ | IDE de la lab | `code --version` |
 | Git | 2.40+ | Cloner le repo | `git --version` |
 | Docker | 24+ | MCP awesome-copilot (optionnel) | `docker --version` |
 
@@ -150,7 +150,7 @@ Ouvrir les settings (`Ctrl+,`) → cliquer sur l'icône `{}` en haut à droite (
 
 ---
 
-## 📊 Suivi des Tokens (tout au long de la démo)
+## 📊 Suivi des Tokens (tout au long de la lab)
 
 ### Où voir les tokens
 
@@ -162,7 +162,7 @@ Ouvrir les settings (`Ctrl+,`) → cliquer sur l'icône `{}` en haut à droite (
 
 ### Tableau de suivi — À IMPRIMER ou ouvrir à côté
 
-Remplir ce tableau **à chaque étape** de la démo :
+Remplir ce tableau **à chaque étape** de la lab :
 
 | # | Étape | Prompt exact | Tokens In | Tokens Out | Total | Observation |
 |---|-------|-------------|:---------:|:----------:|:-----:|-------------|
@@ -179,7 +179,7 @@ Remplir ce tableau **à chaque étape** de la démo :
 
 ---
 
-## 🎬 DÉMO 1 — Génération de Code
+## 🎬 LAB 1 — Génération de Code
 
 ### 🎯 Objectif
 Montrer que Copilot génère du code JS complet et de qualité à partir d'un simple commentaire.
@@ -233,7 +233,7 @@ Chaque fonction a :
 
 ---
 
-## 🎬 DÉMO 2 — Génération de Tests
+## 🎬 LAB 2 — Génération de Tests
 
 ### 🎯 Objectif
 Montrer que Copilot génère des tests unitaires complets et pertinents.
@@ -275,7 +275,7 @@ Pour `taskService.js`, Copilot génère ~15-20 tests couvrant :
 
 ---
 
-## 🎬 DÉMO 3 — Génération de Documentation
+## 🎬 LAB 3 — Génération de Documentation
 
 ### 🎯 Objectif
 Montrer que Copilot génère de la documentation JSDoc riche et précise.
@@ -323,7 +323,7 @@ Montrer que Copilot génère de la documentation JSDoc riche et précise.
 
 ---
 
-## 🎬 DÉMO 4 — Modes Copilot (Ask, Edit, Agent)
+## 🎬 LAB 4 — Modes Copilot (Ask, Edit, Agent)
 
 ### 🎯 Objectif
 Montrer les 3 modes d'interaction avec Copilot et leurs cas d'usage.
@@ -455,7 +455,7 @@ npm test
 
 ---
 
-## 🎬 DÉMO 5 — Custom Agents, Prompts, Instructions, Skills & MCP
+## 🎬 LAB 5 — Custom Agents, Prompts, Instructions, Skills & MCP
 
 ### 🎯 Objectif
 Créer from scratch chaque type de personnalisation Copilot et observer son effet immédiat.
@@ -1698,9 +1698,9 @@ Teste le scénario suivant :
 
 ---
 
-### 🏆 Démos Avancées — Comparatifs Poussés
+### 🏆 Labs Avancées — Comparatifs Poussés
 
-Ces démos sont conçues pour prouver de manière irréfutable l'impact de chaque mécanisme. Chaque démo utilise le MÊME prompt de base et compare les résultats selon la configuration active.
+Ces labs sont conçues pour prouver de manière irréfutable l'impact de chaque mécanisme. Chaque lab utilise le MÊME prompt de base et compare les résultats selon la configuration active.
 
 > **Conseil** : Pour chaque comparatif, ouvrir le panneau Output (`Ctrl+Shift+U` → "GitHub Copilot Chat") et noter les `request token count` / `response token count` pour chaque variante.
 
@@ -2358,7 +2358,7 @@ Voici le screenshot comme preuve :
 | **Temps total** | 3-5 min | 30 secondes |
 | **Tokens OUT** | ~300-400 (code) | ~200-300 (résultat + outil) |
 | **Fiabilité** | ⚠️ Code peut avoir des erreurs | ✅ Copilot retry si ça échoue |
-| **Effet "WOW" en démo** | 😐 "Ah ok du code" | 🤯 "Il fait le test tout seul !" |
+| **Effet "WOW" en lab** | 😐 "Ah ok du code" | 🤯 "Il fait le test tout seul !" |
 
 ---
 
@@ -2493,11 +2493,11 @@ Using tool: browser_screenshot
 | **Preuve navigateur** | ❌ Non | ❌ Non | ✅ Screenshot |
 | **Si un test échoue** | Debug manuel (2-3 tours) | Debug manuel (1 tour) | **Copilot corrige et relance** |
 | **Réutilisable** | ❌ (refaire à chaque fois) | ✅ (même template) | ✅ (même agent) |
-| **Effet démo** | 😐 Normal | 🙂 Efficace | 🤯 Impressionnant |
+| **Effet lab** | 😐 Normal | 🙂 Efficace | 🤯 Impressionnant |
 
 ---
 
-#### 🔬 COMPARATIF 6 — La démonstration "WOW" — Tout assemblé
+#### 🔬 COMPARATIF 6 — La labnstration "WOW" — Tout assemblé
 
 **Scénario final** : Montrer un workflow complet qui utilise TOUS les mécanismes en 1 seul prompt.
 
@@ -2534,7 +2534,7 @@ Ajoute un système de tags aux tâches :
 4. Crée les tests pour les nouvelles méthodes dans tests/taskService.test.js
 5. Lance tous les tests (npm test) pour vérifier la non-régression
 6. Teste dans le navigateur :
-   - Crée une tâche "Démo Tags"
+   - Crée une tâche "Lab Tags"
    - Appelle POST /api/tasks/{id}/tags avec tag "urgent"
    - Vérifie que le badge "urgent" s'affiche
    - Screenshot final de preuve
@@ -2570,7 +2570,7 @@ Ajoute un système de tags aux tâches :
 ✅ PASS — Navigateur : badge "urgent" visible
 
 📷 Screenshot final :
-[Image montrant la tâche "Démo Tags" avec le badge "urgent" en orange]
+[Image montrant la tâche "Lab Tags" avec le badge "urgent" en orange]
 
 Résumé : 6/6 étapes passées ✅
 ```
@@ -2579,7 +2579,7 @@ Résumé : 6/6 étapes passées ✅
 
 ##### Ce qui a été utilisé simultanément :
 
-| Mécanisme | Rôle dans cette démo | Preuve visible |
+| Mécanisme | Rôle dans cette lab | Preuve visible |
 |-----------|---------------------|----------------|
 | **Instructions projet** | Code en ES Modules, JSDoc, français | Voir le code généré |
 | **Instruction conditionnelle routes** | Format { data }, try/catch | Voir tasks.js modifié |
@@ -2628,10 +2628,10 @@ Résumé : 6/6 étapes passées ✅
 
 ---
 
-## 🎬 DÉMO 6 — Gestion du Contexte (Influence directe sur la qualité et les tokens)
+## 🎬 LAB 6 — Gestion du Contexte (Influence directe sur la qualité et les tokens)
 
 ### 🎯 Objectif
-Démontrer visuellement que le contexte envoyé à Copilot change radicalement la qualité des réponses ET la consommation de tokens. Chaque sous-démo montre un avant/après mesurable.
+Labntrer visuellement que le contexte envoyé à Copilot change radicalement la qualité des réponses ET la consommation de tokens. Chaque sous-lab montre un avant/après mesurable.
 
 > ⚠️ **Tout se fait dans VS Code.** Le contexte est ce que Copilot "voit" quand il répond. Plus vous le maîtrisez, plus les réponses sont pertinentes et moins vous consommez de tokens.
 
@@ -2753,7 +2753,7 @@ coverage/
 ```
 Copilot ne comptera PAS les fichiers dans node_modules/ (des milliers de fichiers exclus).
 
-**Étape 4** — Pour démontrer l'impact, commenter temporairement `.copilotignore` (ajouter `#` devant chaque ligne) et relancer la même question. Le temps de réponse sera plus long et les tokens IN bien plus élevés.
+**Étape 4** — Pour labntrer l'impact, commenter temporairement `.copilotignore` (ajouter `#` devant chaque ligne) et relancer la même question. Le temps de réponse sera plus long et les tokens IN bien plus élevés.
 
 **Étape 5** — Remettre `.copilotignore` en place.
 
@@ -3060,10 +3060,10 @@ Prompt : [coller screenshot] + "Reproduis ce design"
 
 ---
 
-## 🎬 DÉMO 7 — Bonnes Pratiques de Prompting (Avant/Après mesurable)
+## 🎬 LAB 7 — Bonnes Pratiques de Prompting (Avant/Après mesurable)
 
 ### 🎯 Objectif
-Prouver par A/B testing que la formulation du prompt impacte directement la qualité ET le coût en tokens. Chaque pratique se démontre en 2 min avec un mauvais prompt puis un bon prompt.
+Prouver par A/B testing que la formulation du prompt impacte directement la qualité ET le coût en tokens. Chaque pratique se labntre en 2 min avec un mauvais prompt puis un bon prompt.
 
 > ⚠️ **Tout se fait dans VS Code** — aucun outil externe requis.
 
@@ -3187,7 +3187,7 @@ Explique la logique de filtrage des tâches
 | Réduction | — | **-70 à -80%** |
 | Pertinence réponse | Mélange infos de plusieurs fichiers | Focalisé sur getTasks() |
 
-**Astuce démo** : Ouvrir le panneau Output AVANT d'envoyer chaque prompt pour voir en temps réel les tokens envoyés.
+**Astuce lab** : Ouvrir le panneau Output AVANT d'envoyer chaque prompt pour voir en temps réel les tokens envoyés.
 
 ---
 
@@ -3524,7 +3524,7 @@ Pour voir l'impact cumulé de toutes les pratiques, faire cette manipulation :
 
 ---
 
-## 🎬 DÉMO 8 — Optimisation des Tokens (Caveman Mode)
+## 🎬 LAB 8 — Optimisation des Tokens (Caveman Mode)
 
 ### 🎯 Objectif
 Prouver concrètement qu'on peut réduire de 50-70% la consommation de tokens sans perdre en qualité.
@@ -3556,7 +3556,7 @@ Rename-Item ".github/instructions/caveman-mode.instructions.md.disabled" "cavema
 # mv .github/instructions/caveman-mode.instructions.md.disabled .github/instructions/caveman-mode.instructions.md
 ```
 
-> **Note** : Ce fichier est livré désactivé (`.disabled`) par défaut pour ne pas affecter les démos 1-7.
+> **Note** : Ce fichier est livré désactivé (`.disabled`) par défaut pour ne pas affecter les labs 1-7.
 
 **Étape 2 — Ouvrir une NOUVELLE conversation** (important pour reset le contexte) :
 - Cliquer sur `+` dans Copilot Chat (nouvelle conversation)
@@ -3680,7 +3680,7 @@ Comment fonctionne la création de tâches ?
 #file:src/services/taskService.js Comment fonctionne la création de tâches ?
 ```
 
-**Démontrer** :
+**Labntrer** :
 1. Poser la question SANS `#file:` → noter les tokens IN
 2. Poser la question AVEC `#file:` → noter les tokens IN
 3. Montrer la différence : **60-80% de tokens IN en moins**
@@ -3744,46 +3744,46 @@ Comment fonctionne la création de tâches ?
 
 ---
 
-## ⏱️ Durée estimée de la démo
+## ⏱️ Durée estimée de la lab
 
-### Version complète (toutes les démos)
+### Version complète (toutes les labs)
 
-| Démo | Contenu | Durée estimée |
+| Lab | Contenu | Durée estimée |
 |------|---------|:---:|
-| **DÉMO 1** | Génération de code | 5 min |
-| **DÉMO 2** | Génération de tests | 5 min |
-| **DÉMO 3** | Génération de docs | 3 min |
-| **DÉMO 4** | Modes Ask / Edit / Agent | 10 min |
-| **DÉMO 5** | Custom Agents, Prompts, Instructions, Skills, MCP | 25-35 min |
-| **DÉMO 5 🏆** | Comparatifs avancés (6 comparatifs) | 20-30 min |
-| **DÉMO 6** | Gestion du contexte | 10-15 min |
-| **DÉMO 7** | Bonnes pratiques prompting | 10-15 min |
-| **DÉMO 8** | Optimisation tokens (Caveman) | 5-10 min |
+| **LAB 1** | Génération de code | 5 min |
+| **LAB 2** | Génération de tests | 5 min |
+| **LAB 3** | Génération de docs | 3 min |
+| **LAB 4** | Modes Ask / Edit / Agent | 10 min |
+| **LAB 5** | Custom Agents, Prompts, Instructions, Skills, MCP | 25-35 min |
+| **LAB 5 🏆** | Comparatifs avancés (6 comparatifs) | 20-30 min |
+| **LAB 6** | Gestion du contexte | 10-15 min |
+| **LAB 7** | Bonnes pratiques prompting | 10-15 min |
+| **LAB 8** | Optimisation tokens (Caveman) | 5-10 min |
 | | **TOTAL complet** | **~90-120 min** |
 
 ### Versions raccourcies (selon le temps disponible)
 
 **Format 30 min — "L'essentiel"** :
-- DÉMO 1 (code) — 3 min
-- DÉMO 4c (Agent mode) — 5 min
-- DÉMO 5 : Comparatif 6 "WOW" uniquement — 10 min
-- DÉMO 8 (Caveman Mode) — 5 min
+- LAB 1 (code) — 3 min
+- LAB 4c (Agent mode) — 5 min
+- LAB 5 : Comparatif 6 "WOW" uniquement — 10 min
+- LAB 8 (Caveman Mode) — 5 min
 - Conclusion + tokens — 5 min
 
 **Format 45 min — "Le convaincant"** :
-- DÉMO 1 (code) — 3 min
-- DÉMO 2 (tests) — 3 min
-- DÉMO 4 (3 modes) — 7 min
-- DÉMO 5 : Comparatifs 1 + 4 + 6 — 15 min
-- DÉMO 8 (Caveman) — 5 min
+- LAB 1 (code) — 3 min
+- LAB 2 (tests) — 3 min
+- LAB 4 (3 modes) — 7 min
+- LAB 5 : Comparatifs 1 + 4 + 6 — 15 min
+- LAB 8 (Caveman) — 5 min
 - Tips tokens + conclusion — 7 min
 
 **Format 60 min — "Le complet"** :
-- DÉMO 1-3 (code/tests/docs) — 10 min
-- DÉMO 4 (3 modes) — 8 min
-- DÉMO 5 : Comparatifs 1 + 3 + 4 + 5 + 6 — 25 min
-- DÉMO 7 (2-3 règles de prompting) — 7 min
-- DÉMO 8 (Caveman) + tips — 10 min
+- LAB 1-3 (code/tests/docs) — 10 min
+- LAB 4 (3 modes) — 8 min
+- LAB 5 : Comparatifs 1 + 3 + 4 + 5 + 6 — 25 min
+- LAB 7 (2-3 règles de prompting) — 7 min
+- LAB 8 (Caveman) + tips — 10 min
 
 
 ---
@@ -3800,7 +3800,7 @@ copilot-demo-orange/
 │   │   ├── full-review.agent.md             # 📋 Agent orchestrateur 3-passes
 │   │   └── qa-tester.agent.md               # 🧪 Agent QA navigateur
 │   ├── instructions/
-│   │   ├── caveman-mode.instructions.md.disabled  # 🦴 Instruction terse (activer pour démo 8)
+│   │   ├── caveman-mode.instructions.md.disabled  # 🦴 Instruction terse (activer pour lab 8)
 │   │   ├── api-routes.instructions.md       # 📏 Conventions routes (applyTo: src/routes/**)
 │   │   └── tests.instructions.md            # 📏 Conventions tests (applyTo: tests/**)
 │   └── prompts/
@@ -3834,7 +3834,7 @@ copilot-demo-orange/
 │   └── e2e/
 │       └── taskManager.spec.js              # 🎭 7 tests Playwright E2E
 ├── scripts/
-│   └── reset-demo.js                        # 🔄 Script de reset entre démos
+│   └── reset-demo.js                        # 🔄 Script de reset entre labs
 ├── playwright.config.js                     # ⚙️ Config Playwright
 ├── jest.config.js                           # ⚙️ Config Jest (exclut e2e/)
 ├── package.json
@@ -3845,7 +3845,7 @@ copilot-demo-orange/
 
 ## ✅ Checklist Jour-J
 
-### AVANT la démo
+### AVANT la lab
 
 ```
 [ ] Node.js 20+ installé                    → node --version
@@ -3862,21 +3862,21 @@ copilot-demo-orange/
 [ ] Output Panel ouvert sur "GitHub Copilot Chat"
 ```
 
-### PENDANT la démo
+### PENDANT la lab
 
 ```
 [ ] À CHAQUE ÉTAPE : noter tokens IN + OUT dans le tableau
-[ ] Démo 1 — Génération code        → categoryService.js créé
-[ ] Démo 2 — Génération tests       → /tests + prompt file
-[ ] Démo 3 — Génération docs        → /doc + /** inline
-[ ] Démo 4 — Modes Ask/Edit/Agent   → 3 modes montrés
-[ ] Démo 5 — Personnalisation       → instructions, prompts, MCP
-[ ] Démo 6 — Gestion du contexte   → avant/après tokens IN mesurés
-[ ] Démo 7 — Bonnes pratiques      → A/B testing prompts
-[ ] Démo 8 — Optimisation tokens   → caveman activé, comparaison faite
+[ ] Lab 1 — Génération code        → categoryService.js créé
+[ ] Lab 2 — Génération tests       → /tests + prompt file
+[ ] Lab 3 — Génération docs        → /doc + /** inline
+[ ] Lab 4 — Modes Ask/Edit/Agent   → 3 modes montrés
+[ ] Lab 5 — Personnalisation       → instructions, prompts, MCP
+[ ] Lab 6 — Gestion du contexte   → avant/après tokens IN mesurés
+[ ] Lab 7 — Bonnes pratiques      → A/B testing prompts
+[ ] Lab 8 — Optimisation tokens   → caveman activé, comparaison faite
 ```
 
-### APRÈS la démo
+### APRÈS la lab
 
 ```
 [ ] Montrer le tableau de tokens rempli → conclusion chiffrée
@@ -3918,9 +3918,9 @@ Toutes les commandes PowerShell de ce README fonctionnent sur **Windows** (VS Co
 
 ---
 
-### 🔄 Script de reset — Remettre tout en état entre les démos
+### 🔄 Script de reset — Remettre tout en état entre les labs
 
-Si vous avez fait des modifications pendant une démo et voulez repartir de zéro :
+Si vous avez fait des modifications pendant une lab et voulez repartir de zéro :
 
 ```bash
 # Option 1 — Reset complet (annule TOUTES les modifications locales)
@@ -4023,7 +4023,7 @@ Stop-Process -Id <PID>
 
 ---
 
-## 🔄 Reproduire la démo — Guide express (5 min)
+## 🔄 Reproduire la lab — Guide express (5 min)
 
 Pour quelqu'un qui clone le repo et veut tout lancer rapidement :
 
@@ -4049,7 +4049,7 @@ code .
 #    - Ctrl+Alt+I → taper "Quel framework ?" → doit répondre "Orange Boosted"
 #    - Ctrl+Shift+U → dropdown → "GitHub Copilot Chat" → logs visibles
 
-# 6. Prêt ! Suivre le README à partir de "DÉMO 1"
+# 6. Prêt ! Suivre le README à partir de "LAB 1"
 ```
 
 ### Configuration minimale requise
